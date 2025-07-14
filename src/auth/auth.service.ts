@@ -19,7 +19,7 @@ export class AuthService {
     if (!isPasswordMatch)
       throw new UnauthorizedException('invalid credentials !');
 
-    return { id: user.id };
+    return { id: user.id }; // req.user
   }
   async login(userid: number) {
     // const payload:AuthJWTPayload={sub :userid}

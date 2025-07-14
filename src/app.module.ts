@@ -10,6 +10,7 @@ import { pgConfig } from 'dbconfig';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { ReservationModule } from './reservation/reservation.module';
 
 @Module({
   imports: [UserModule, WorkerModule,ConfigModule.forRoot(
@@ -17,7 +18,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal:true,
       envFilePath:".env"
     }
-  ) , TypeOrmModule.forRoot(pgConfig), UserModule, AuthModule],
+  ) , TypeOrmModule.forRoot(pgConfig), UserModule, AuthModule, ReservationModule , ReservationModule],
   controllers: [AppController],
   providers: [AppService],
 })

@@ -11,14 +11,17 @@ import { ConfigModule } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import refrechJwtConfig from './config/refrech-jwt.config';
 import { RefrechJwtStrategy } from './strategies/refrech.strategy';
+import { ReservationService } from 'src/reservation/reservation.service';
+import { Reservation } from 'src/entities/reservation.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User]),
+  imports:[TypeOrmModule.forFeature([User,Reservation]),
 JwtModule.registerAsync(jwtConfig.asProvider()),
 ConfigModule.forFeature(jwtConfig),
-ConfigModule.forFeature(refrechJwtConfig)
+ConfigModule.forFeature(refrechJwtConfig),
+
 ],
   controllers: [AuthController],
-  providers:  [AuthService , UserService,LocalStrategy, JwtStrategy,RefrechJwtStrategy],
+  providers:  [AuthService , UserService,LocalStrategy, JwtStrategy,RefrechJwtStrategy,ReservationService],
 })
 export class AuthModule {}

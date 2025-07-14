@@ -1,4 +1,3 @@
-/* eslint-disable prettier/prettier */
 import { PostgresConnectionOptions } from "typeorm/driver/postgres/PostgresConnectionOptions";
 import * as dotenv from 'dotenv';
 

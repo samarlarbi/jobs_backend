@@ -1,5 +1,5 @@
 import { registerAs } from "@nestjs/config";
-import { JwtModuleAsyncOptions, JwtModuleOptions } from "@nestjs/jwt";
+import {  JwtModuleOptions } from "@nestjs/jwt";
 
 export default registerAs("jwt" , (): JwtModuleOptions=>({
     secret:process.env.JWT_SECRET,

@@ -2,15 +2,36 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { PaginationDTO } from 'src/DTO/pagination.dto';
+import { reservationDTO } from 'src/DTO/reservation.dto';
 import { UpdateUserDto } from 'src/DTO/updateUser.dto';
 import { CreateUserDto } from 'src/DTO/user.dto';
+import { Reservation } from 'src/entities/reservation.entity';
 import { User } from 'src/entities/user.entity';
+import { ReservationService } from 'src/reservation/reservation.service';
 import { DEFAULT_PAGE_SIZE } from 'src/utils/constants';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepo: Repository<User>) {}
+  constructor(@InjectRepository(User) private userRepo: Repository<User>,
+    private reservationservice: ReservationService,
+  
+) {
+
+  
+
+}
+
+
+
+  async createReservation(cliendid:number,dto : reservationDTO)
+{
+  dto.client= cliendid
+ 
+return this.reservationservice.createreservation(dto);
+
+  }
+
 
   async create(dto: CreateUserDto) {
     const user = await this.userRepo.create(dto)

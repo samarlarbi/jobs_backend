@@ -6,7 +6,7 @@ import * as bycrypt from "bcrypt"
 export class User{
     @PrimaryGeneratedColumn()
     id:number
-    @Column({default:"123"})
+    @Column()
     password:string
     @Column()
     name:String

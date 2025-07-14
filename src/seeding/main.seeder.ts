@@ -41,6 +41,6 @@ export class MainSeeder implements Seeder {
     const reservationRepo = dataSource.getRepository(Reservation);
     await reservationRepo.save(reservations);
 
-    console.log("✅ Seeding complete!");
+    console.log("Seeding complete!");
   }
 }

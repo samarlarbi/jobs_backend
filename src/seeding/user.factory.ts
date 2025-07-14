@@ -7,6 +7,7 @@ export const UserFactory = setSeederFactory(User,( x ) =>
         const user = new User();
         user.name = faker.person.firstName();
         user.email = faker.internet.email();
+        user.password="123"
         user.location = faker.location.city();
         user.phone = faker.phone.number();
 
