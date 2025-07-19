@@ -1,8 +1,10 @@
-import { IsNumber } from "class-validator";
+import { IsNumber, IsString } from "class-validator";
 
 export class reservationDTO{
     @IsNumber()
-    client:number
+    client: number
     @IsNumber()
-    worker: number
+    worker:  number
+    @IsString()
+    status="Pending"
 }

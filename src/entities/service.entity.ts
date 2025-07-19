@@ -1,5 +1,5 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
-import { Worker } from "./worker.entity";
+import { WorkerInfo } from "./worker.entity";
 
 @Entity()
 export class Service{
@@ -7,6 +7,6 @@ export class Service{
     id:number
     @Column()
     title:string
-    @ManyToMany(()=>Worker,(worker)=>worker.services)
-    workers:Worker[]
+    @ManyToMany(()=>WorkerInfo,(worker)=>worker.services)
+    workers:WorkerInfo[]
 }

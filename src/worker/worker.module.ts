@@ -1,13 +1,15 @@
 import { Module, ValidationPipe } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
-import { Worker } from "src/entities/worker.entity";
+import { WorkerInfo } from "src/entities/worker.entity";
 import { WorkerController } from "./worker.controller";
 import { WorkerService } from "./worker.service";
 import { APP_PIPE } from "@nestjs/core/constants";
+import { Reservation } from "src/entities/reservation.entity";
+import { ReservationService } from "src/reservation/reservation.service";
 
 @Module(
     {
-        imports:[TypeOrmModule.forFeature([Worker])],
+        imports:[TypeOrmModule.forFeature([WorkerInfo,Reservation])],
         controllers:[WorkerController],
          providers: [
             {
@@ -22,7 +24,7 @@ import { APP_PIPE } from "@nestjs/core/constants";
               })
             },
             
-            WorkerService],
+            WorkerService,ReservationService],
 
     }
 )

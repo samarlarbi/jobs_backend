@@ -1,10 +1,13 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
 import { UserService } from 'src/user/user.service';
 import { AuthJWTPayload } from './types/auth-jwtPayload';
 import refrechJwtConfig from './config/refrech-jwt.config';
 import * as argon2 from 'argon2';
+import { Currency } from '@faker-js/faker/.';
+import { CurrentUSer } from './types/current-user';
+import { CreateUserDto } from 'src/DTO/user.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -21,6 +24,15 @@ export class AuthService {
 
     return { id: user.id }; // req.user
   }
+
+
+  async signUp(dto: CreateUserDto){
+    
+    const user = await this.userservice.create(dto) 
+  return{id:user.id}
+  
+  }
+
   async login(userid: number) {
     // const payload:AuthJWTPayload={sub :userid}
     // const token= this.jwtService.sign(payload)
@@ -75,5 +87,15 @@ export class AuthService {
   async signout(userid:number){
     await this.userservice.updateHashedRefreshToken(userid,null)
 
+  }
+
+
+  async validateJWTUser (userid : number){
+    const user = await this.userservice.findOne(userid)
+    if(!user ) throw new UnauthorizedException('user not found')
+      const currentuser : CurrentUSer = {
+    id:user.id , role:user.role }
+
+return currentuser
   }
 }

@@ -6,9 +6,10 @@ import { User } from 'src/entities/user.entity';
 import { APP_PIPE } from '@nestjs/core';
 import { ReservationService } from 'src/reservation/reservation.service';
 import { Reservation } from 'src/entities/reservation.entity';
+import { WorkerInfo } from 'src/entities/worker.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Reservation])],
+  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo])],
   controllers: [UserController],
   providers: [
     {

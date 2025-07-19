@@ -13,9 +13,10 @@ import refrechJwtConfig from './config/refrech-jwt.config';
 import { RefrechJwtStrategy } from './strategies/refrech.strategy';
 import { ReservationService } from 'src/reservation/reservation.service';
 import { Reservation } from 'src/entities/reservation.entity';
+import { WorkerInfo } from 'src/entities/worker.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Reservation]),
+  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo]),
 JwtModule.registerAsync(jwtConfig.asProvider()),
 ConfigModule.forFeature(jwtConfig),
 ConfigModule.forFeature(refrechJwtConfig),

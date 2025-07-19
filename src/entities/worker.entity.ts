@@ -1,41 +1,37 @@
+import { User } from './user.entity';
 import {
   ChildEntity,
   Column,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
   OneToMany,
+  OneToOne,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './user.entity';
 import { Reservation } from './reservation.entity';
-import { forwardRef } from '@nestjs/common';
 import { Service } from './service.entity';
+import { OffShift } from './offShift.entity';
+
 @Entity()
-export class Worker {
-  @PrimaryGeneratedColumn()
-  id: number;
-  @Column()
-  name: String;
-  @Column()
-  email: String;
-  @Column()
-  location: String;
-  
+export class WorkerInfo {
+  @PrimaryColumn()
+  userId: number;
 
-  @ManyToMany(()=>Service,(service)=>service.workers)
-  @JoinTable({name:"workers_services"})
-  services:Service[]
+  @OneToOne(() => User, (user) => user.worker, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
-  @Column()
-  phone: String;
-
-  @OneToMany(() => Reservation, (reservation) => reservation.client)
-  reservations: Reservation[];
-  
-
-  @OneToMany(() => Reservation, (reservation) => reservation.worker)
+  @ManyToMany(() => Service, (service) => service.workers)
+  @JoinTable({ name: 'workers_services' })
+  services: Service[];
+  @OneToMany(() => Reservation, (reservation) => reservation.worker, {
+    cascade: true,
+  })
   requests: Reservation[];
 
-
+  @OneToMany(() => OffShift, (offShift) => offShift.worker, { cascade: true })
+  offShifts: OffShift[];
 }
