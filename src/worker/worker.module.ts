@@ -6,10 +6,12 @@ import { WorkerService } from "./worker.service";
 import { APP_PIPE } from "@nestjs/core/constants";
 import { Reservation } from "src/entities/reservation.entity";
 import { ReservationService } from "src/reservation/reservation.service";
+import { OffShift } from "src/entities/offShift.entity";
+import { Service } from "src/entities/service.entity";
 
 @Module(
     {
-        imports:[TypeOrmModule.forFeature([WorkerInfo,Reservation])],
+        imports:[TypeOrmModule.forFeature([WorkerInfo,Reservation, OffShift,Service])],
         controllers:[WorkerController],
          providers: [
             {

@@ -7,9 +7,11 @@ import { APP_PIPE } from '@nestjs/core';
 import { ReservationService } from 'src/reservation/reservation.service';
 import { Reservation } from 'src/entities/reservation.entity';
 import { WorkerInfo } from 'src/entities/worker.entity';
+import { OffShift } from 'src/entities/offShift.entity';
+import { Service } from 'src/entities/service.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo])],
+  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo,OffShift,Service])],
   controllers: [UserController],
   providers: [
     {

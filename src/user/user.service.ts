@@ -26,33 +26,44 @@ export class UserService {
     @InjectRepository(User) private userRepo: Repository<User>,
     private reservationservice: ReservationService,
     @InjectRepository(WorkerInfo)
-    private  workerRepo: Repository<WorkerInfo>,
+    private workerRepo: Repository<WorkerInfo>,
   ) {}
 
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
-    if ( dto.userId){
-    const worker = await this.workerRepo.findOne({where:{
-      userId:dto.userId
-    },
-  })
+    if (dto.userId) {
+      const worker = await this.workerRepo.findOne({
+        where: {
+          userId: dto.userId,
+        },
+      });
 
-    console.log(worker);
-    if(worker) throw new ConflictException("worker already created")
-    
-    const user = await this.userRepo.find({where:{
-      id:dto.userId
-    }})
+      console.log(worker);
+      if (worker) throw new ConflictException('worker already created');
 
-       if(user.length==1) {
-        await this.userRepo.update({id:dto.userId},{role:Role.WORKER})       
-        const newWorker= await this.workerRepo.create(dto)
-        return this.workerRepo.save(newWorker)
+      const user = await this.userRepo.find({
+        where: {
+          id: dto.userId,
+        },
+      });
 
-       }
+      if (user.length == 1) {
+        await this.userRepo.update({ id: dto.userId }, { role: Role.WORKER });
+        const newWorker = await this.workerRepo.create(dto);
+        return this.workerRepo.save(newWorker);
       }
-      else{
+    } else {
+      try {
+        console.log('**************');
+        console.log(dto);
+
+        const newuser = await this.create(dto as CreateUserWorkerDto);
+        dto.userId = newuser.id;
+        const newWorker = await this.workerRepo.create(dto);
+        return this.workerRepo.save(newWorker);
+      } catch (error) {
+        throw new ConflictException('error , try again !');
       }
-return "nepas un client"
+    }
   }
 
   async createReservation(cliendid: any, dto: any) {
@@ -68,7 +79,8 @@ return "nepas un client"
     }
   }
 
-  async create(dto: CreateUserDto) {
+  async create(dto: CreateUserDto | CreateUserWorkerDto) {
+    console.log(dto);
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
     });

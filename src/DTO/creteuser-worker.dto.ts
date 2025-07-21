@@ -1,8 +1,9 @@
 import { IsNumber, IsOptional, IsString } from "class-validator";
 import { CreateUserDto } from "./user.dto";
-
+import { Role } from "src/auth/enums/role.enum";
 export class CreateUserWorkerDto extends CreateUserDto {
-     @IsNumber()
+   
+   @IsNumber()
      @IsOptional()
   userId: number;
   @IsOptional()

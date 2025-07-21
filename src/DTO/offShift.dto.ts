@@ -1,6 +1,11 @@
-import { IsDateString, Matches } from 'class-validator';
+import { IsDateString, IsNumber, IsOptional, Matches } from 'class-validator';
+import { WorkerInfo } from 'src/entities/worker.entity';
 
 export class OffShiftDto {
+@IsOptional()
+  @IsNumber()
+  worker:WorkerInfo
+
   @IsDateString({},{ message: 'day must be a valid ISO date string (YYYY-MM-DD)' })
   day: string;
 

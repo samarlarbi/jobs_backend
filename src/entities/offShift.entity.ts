@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Unique } from 'typeorm';
 import { WorkerInfo } from './worker.entity';
 
 
 @Entity()
+@Unique(['day', 'startTime', 'endTime', 'worker'])
 export class OffShift {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,4 +19,6 @@ export class OffShift {
 
   @ManyToOne(() => WorkerInfo, (worker) => worker.offShifts, { onDelete: 'CASCADE' })
   worker: WorkerInfo;
+
+
 }

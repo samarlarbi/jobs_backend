@@ -25,6 +25,7 @@ import { Role } from 'src/auth/enums/role.enum';
 import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
 import { CreateWorkerDto } from 'src/DTO/worker.dto';
 import { CreateUserWorkerDto } from 'src/DTO/creteuser-worker.dto';
+import { reservationDTO } from 'src/DTO/reservation.dto';
 
 @Controller('user')
 export class UserController {
@@ -38,7 +39,8 @@ export class UserController {
     return this.userService.create(dto);
   }
   @Post('worker')
-  createworker(@Body() dto: CreateWorkerDto | CreateUserWorkerDto) {
+  createworker(@Body() dto:  CreateUserWorkerDto |CreateWorkerDto ) {
+    dto.role=Role.WORKER
     console.log(dto);
     console.log(dto.userId);
     return this.userService.createWorker(dto);
@@ -62,8 +64,8 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('reservation')
-  createreservation(@Req() req, @Body() body) {
-    return this.userService.createReservation(req.user.id, body);
+  createreservation(@Req() req, @Body() body : reservationDTO) {
+    return this.reservationService.createreservation(body);
   }
 
   @Roles(Role.WORKER)
