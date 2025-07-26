@@ -33,4 +33,5 @@ export class Reservation {
 
   @Column({type:'time'})
   endTime: string; 
+  
 }

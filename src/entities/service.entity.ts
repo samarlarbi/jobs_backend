@@ -6,7 +6,9 @@ export class Service{
     @PrimaryGeneratedColumn()
     id:number
     @Column()
-    title:string
-    @ManyToMany(()=>WorkerInfo,(worker)=>worker.services)
+    title:string  
+      @Column({nullable:true})
+    url:string
+    @ManyToMany(()=>WorkerInfo,(worker)=>worker.workerServices)
     workers:WorkerInfo[]
 }

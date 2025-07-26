@@ -8,10 +8,11 @@ import { Reservation } from "src/entities/reservation.entity";
 import { ReservationService } from "src/reservation/reservation.service";
 import { OffShift } from "src/entities/offShift.entity";
 import { Service } from "src/entities/service.entity";
+import { WorkerServices } from "src/entities/worker_service.entity";
 
 @Module(
     {
-        imports:[TypeOrmModule.forFeature([WorkerInfo,Reservation, OffShift,Service])],
+        imports:[TypeOrmModule.forFeature([WorkerInfo,Reservation, OffShift,Service,WorkerServices])],
         controllers:[WorkerController],
          providers: [
             {

@@ -14,6 +14,7 @@ import { UpdateUserDto } from 'src/DTO/updateUser.dto';
 import { CreateUserDto } from 'src/DTO/user.dto';
 import { CreateWorkerDto } from 'src/DTO/worker.dto';
 import { Reservation } from 'src/entities/reservation.entity';
+import { Service } from 'src/entities/service.entity';
 import { User } from 'src/entities/user.entity';
 import { WorkerInfo } from 'src/entities/worker.entity';
 import { ReservationService } from 'src/reservation/reservation.service';
@@ -27,16 +28,23 @@ export class UserService {
     private reservationservice: ReservationService,
     @InjectRepository(WorkerInfo)
     private workerRepo: Repository<WorkerInfo>,
+       @InjectRepository(Service)
+    private servicesrepo: Repository<Service>,
   ) {}
 
+  async getallservices(){
+       return await this.servicesrepo.find({
+      skip: 0,
+      take: 10,
+    });
+  }
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
       const worker = await this.workerRepo.findOne({
-        where: {
+        where: {          
           userId: dto.userId,
         },
       });
-
       console.log(worker);
       if (worker) throw new ConflictException('worker already created');
 

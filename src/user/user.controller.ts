@@ -34,6 +34,11 @@ export class UserController {
     private reservationService: ReservationService,
   ) {}
 
+  @Get("services")
+  getallservices()
+  {
+    return this.userService.getallservices() }
+
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
