@@ -14,18 +14,18 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from 'src/DTO/user.dto';
-import { UpdateUserDto } from 'src/DTO/updateUser.dto';
-import { PaginationDTO } from 'src/DTO/pagination.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
-import { ReservationService } from 'src/reservation/reservation.service';
-import { UpdateReservationDTO } from 'src/DTO/updatereservation.dto';
-import { Roles } from 'src/auth/decorator/roles.decorator';
-import { Role } from 'src/auth/enums/role.enum';
-import { RolesGuard } from 'src/auth/guards/roles/roles.guard';
-import { CreateWorkerDto } from 'src/DTO/worker.dto';
-import { CreateUserWorkerDto } from 'src/DTO/creteuser-worker.dto';
-import { reservationDTO } from 'src/DTO/reservation.dto';
+import { CreateUserDto } from '../DTO/user.dto';
+import { UpdateUserDto } from '../DTO/updateUser.dto';
+import { PaginationDTO } from '../DTO/pagination.dto';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
+import { ReservationService } from '../reservation/reservation.service';
+import { UpdateReservationDTO } from '../DTO/updatereservation.dto';
+import { Roles } from '../auth/decorator/roles.decorator';
+import { Role } from '../auth/enums/role.enum';
+import { RolesGuard } from '../auth/guards/roles/roles.guard';
+import { CreateWorkerDto } from '../DTO/worker.dto';
+import { CreateUserWorkerDto } from '../DTO/creteuser-worker.dto';
+import { reservationDTO } from '../DTO/reservation.dto';
 
 @Controller('user')
 export class UserController {

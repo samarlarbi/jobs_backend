@@ -1,5 +1,5 @@
 import { IsDateString, IsNumber, IsOptional, Matches } from 'class-validator';
-import { WorkerInfo } from 'src/entities/worker.entity';
+import { WorkerInfo } from '../entities/worker.entity';
 
 export class OffShiftDto {
 @IsOptional()

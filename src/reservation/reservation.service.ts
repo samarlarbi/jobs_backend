@@ -6,11 +6,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OffShiftDto } from 'src/DTO/offShift.dto';
-import { reservationDTO } from 'src/DTO/reservation.dto';
-import { UpdateReservationDTO } from 'src/DTO/updatereservation.dto';
-import { OffShift } from 'src/entities/offShift.entity';
-import { Reservation } from 'src/entities/reservation.entity';
+import { OffShiftDto } from '../DTO/offShift.dto';
+import { reservationDTO } from '../DTO/reservation.dto';
+import { UpdateReservationDTO } from '../DTO/updatereservation.dto';
+import { OffShift } from '../entities/offShift.entity';
+import { Reservation } from '../entities/reservation.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

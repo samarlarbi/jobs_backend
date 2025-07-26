@@ -1,13 +1,13 @@
 import { ConflictException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcrypt';
-import { UserService } from 'src/user/user.service';
+import { UserService } from '../user/user.service';
 import { AuthJWTPayload } from './types/auth-jwtPayload';
 import refrechJwtConfig from './config/refrech-jwt.config';
 import * as argon2 from 'argon2';
 import { Currency } from '@faker-js/faker/.';
 import { CurrentUSer } from './types/current-user';
-import { CreateUserDto } from 'src/DTO/user.dto';
+import { CreateUserDto } from '../DTO/user.dto';
 @Injectable()
 export class AuthService {
   constructor(

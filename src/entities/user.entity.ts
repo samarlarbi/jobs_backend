@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 import { Reservation } from './reservation.entity';
 import * as bycrypt from 'bcrypt';
-import { Role } from 'src/auth/enums/role.enum';
+import { Role } from '../auth/enums/role.enum';
 import { WorkerInfo } from './worker.entity';
 @Entity()
 export class User {

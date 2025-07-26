@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { RefrechAuthGuard } from './guards/refrech-auth/refrech-auth.guard';
 import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
 import { ExceptionsHandler } from '@nestjs/core/exceptions/exceptions-handler';
-import { CreateUserDto } from 'src/DTO/user.dto';
+import { CreateUserDto } from '../DTO/user.dto';
 
 @Controller('auth')
 export class AuthController {

@@ -5,13 +5,13 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { OffShiftDto } from 'src/DTO/offShift.dto';
-import { UpdateWorkerDto } from 'src/DTO/updateWorker.dto';
-import { CreateWorkerDto } from 'src/DTO/worker.dto';
-import { OffShift } from 'src/entities/offShift.entity';
-import { Service } from 'src/entities/service.entity';
-import { WorkerInfo } from 'src/entities/worker.entity';
-import { WorkerServices } from 'src/entities/worker_service.entity';
+import { OffShiftDto } from '../DTO/offShift.dto';
+import { UpdateWorkerDto } from '../DTO/updateWorker.dto';
+import { CreateWorkerDto } from '../DTO/worker.dto';
+import { OffShift } from '../entities/offShift.entity';
+import { Service } from '../entities/service.entity';
+import { WorkerInfo } from '../entities/worker.entity';
+import { WorkerServices } from '../entities/worker_service.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()

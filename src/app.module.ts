@@ -6,7 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { WorkerService } from './worker/worker.service';
 import { WorkerController } from './worker/worker.controller';
 import { WorkerModule } from './worker/worker.module';
-import { pgConfig } from 'dbconfig';
+import { pgConfig } from './dbconfig';
 import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';

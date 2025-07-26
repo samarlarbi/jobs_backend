@@ -5,20 +5,17 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Role } from 'src/auth/enums/role.enum';
-import { CreateUserWorkerDto } from 'src/DTO/creteuser-worker.dto';
-import { OffShiftDto } from 'src/DTO/offShift.dto';
-import { PaginationDTO } from 'src/DTO/pagination.dto';
-import { reservationDTO } from 'src/DTO/reservation.dto';
-import { UpdateUserDto } from 'src/DTO/updateUser.dto';
-import { CreateUserDto } from 'src/DTO/user.dto';
-import { CreateWorkerDto } from 'src/DTO/worker.dto';
-import { Reservation } from 'src/entities/reservation.entity';
-import { Service } from 'src/entities/service.entity';
-import { User } from 'src/entities/user.entity';
-import { WorkerInfo } from 'src/entities/worker.entity';
-import { ReservationService } from 'src/reservation/reservation.service';
-import { DEFAULT_PAGE_SIZE } from 'src/utils/constants';
+import { Role } from '../auth/enums/role.enum';
+import { CreateUserWorkerDto } from '../DTO/creteuser-worker.dto';
+import { PaginationDTO } from '../DTO/pagination.dto';
+import { UpdateUserDto } from '../DTO/updateUser.dto';
+import { CreateUserDto } from '../DTO/user.dto';
+import { CreateWorkerDto } from '../DTO/worker.dto';
+import { Service } from '../entities/service.entity';
+import { User } from '../entities/user.entity';
+import { WorkerInfo } from '../entities/worker.entity';
+import { ReservationService } from '../reservation/reservation.service';
+import { DEFAULT_PAGE_SIZE } from '../utils/constants';
 import { Repository } from 'typeorm';
 
 @Injectable()

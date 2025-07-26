@@ -9,13 +9,13 @@ import {
   Put,
   ParseIntPipe,
 } from '@nestjs/common';
-import { CreateWorkerDto } from 'src/DTO/worker.dto';
-import { UpdateWorkerDto } from 'src/DTO/updateWorker.dto';
-import { UpdateReservationDTO } from 'src/DTO/updatereservation.dto';
-import { ReservationService } from 'src/reservation/reservation.service';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
-import { OffShift } from 'src/entities/offShift.entity';
-import { OffShiftDto } from 'src/DTO/offShift.dto';
+import { CreateWorkerDto } from '../DTO/worker.dto';
+import { UpdateWorkerDto } from '../DTO/updateWorker.dto';
+import { UpdateReservationDTO } from '../DTO/updatereservation.dto';
+import { ReservationService } from '../reservation/reservation.service';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth/jwt-auth.guard';
+import { OffShift } from '../entities/offShift.entity';
+import { OffShiftDto } from '../DTO/offShift.dto';
 @Controller('worker')
 export class WorkerController {
   constructor(
