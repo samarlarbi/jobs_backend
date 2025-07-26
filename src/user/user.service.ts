@@ -15,7 +15,6 @@ import { Service } from '../entities/service.entity';
 import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { ReservationService } from '../reservation/reservation.service';
-import { DEFAULT_PAGE_SIZE } from '../utils/constants';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -105,7 +104,7 @@ export class UserService {
   async findAll(paginationdto: PaginationDTO) {
     return await this.userRepo.find({
       skip: paginationdto.skip,
-      take: paginationdto.limit ?? DEFAULT_PAGE_SIZE,
+      take: paginationdto.limit ?? 10,
     });
   }
 
