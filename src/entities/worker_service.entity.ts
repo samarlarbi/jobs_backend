@@ -13,7 +13,7 @@ export class WorkerServices {
 
   @Column()
   workerId: number;
- @Column()
+ @Column({nullable:true})
   description: string;
   @ManyToOne(() => Service, (service) => service.workers, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'serviceId' })
