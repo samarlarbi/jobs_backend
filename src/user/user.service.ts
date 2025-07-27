@@ -48,8 +48,8 @@ export class UserService {
    
   const result = await Promise.all(
      list.map(async (item) => {
-      const worker = await this.workerRepo.findOne({
-        where: { userId: item.workerId },
+      const worker = await this.userRepo.findOne({
+        where: { id: item.workerId },
       });
 
       const service = await this.servicesrepo.findOne({
