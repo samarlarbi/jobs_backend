@@ -16,7 +16,7 @@ import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { ReservationService } from '../reservation/reservation.service';
 import { Repository } from 'typeorm';
-import { WorkerServices } from 'src/entities/worker_service.entity';
+import { WorkerServices } from '../entities/worker_service.entity';
 
 @Injectable()
 export class UserService {
