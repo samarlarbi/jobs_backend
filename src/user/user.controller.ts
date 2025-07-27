@@ -34,15 +34,20 @@ export class UserController {
     private reservationService: ReservationService,
   ) {}
 
+      @UseGuards(JwtAuthGuard)
+
   @Get("services")
   getallservices()
   {
     return this.userService.getallservices() }
 
+
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
+
+
     @UseGuards(JwtAuthGuard)
 
   @Post('worker')
@@ -52,6 +57,8 @@ export class UserController {
     dto.userId = req.user.id
     return this.userService.createWorker(dto);
   }
+      @UseGuards(JwtAuthGuard)
+
 
   @Get()
   findAll(@Query() paginationdto: PaginationDTO) {
