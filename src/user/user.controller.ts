@@ -34,32 +34,32 @@ export class UserController {
     private reservationService: ReservationService,
   ) {}
 
-      @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('services')
+  getallservices() {
+    return this.userService.getallservices();
+  }
 
-  @Get("services")
-  getallservices()
-  {
-    return this.userService.getallservices() }
-
+  @UseGuards(JwtAuthGuard)
+  @Get('services')
+  getallworkerservices() {
+    return this.userService.getallworkersservices();
+  }
 
   @Post()
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
 
-
-    @UseGuards(JwtAuthGuard)
-
+  @UseGuards(JwtAuthGuard)
   @Post('worker')
-  createworker(@Req() req ,@Body() dto:  CreateUserWorkerDto |CreateWorkerDto ) {
-    dto.role=Role.WORKER
+  createworker(@Req() req, @Body() dto: CreateUserWorkerDto | CreateWorkerDto) {
+    dto.role = Role.WORKER;
     console.log(dto);
-    dto.userId = req.user.id
+    dto.userId = req.user.id;
     return this.userService.createWorker(dto);
   }
-      @UseGuards(JwtAuthGuard)
-
-
+  @UseGuards(JwtAuthGuard)
   @Get()
   findAll(@Query() paginationdto: PaginationDTO) {
     return this.userService.findAll(paginationdto);
@@ -78,7 +78,7 @@ export class UserController {
 
   @UseGuards(JwtAuthGuard)
   @Post('reservation')
-  createreservation(@Req() req, @Body() body : reservationDTO) {
+  createreservation(@Req() req, @Body() body: reservationDTO) {
     return this.reservationService.createreservation(body);
   }
 
