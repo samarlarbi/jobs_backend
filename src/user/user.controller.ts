@@ -41,7 +41,7 @@ export class UserController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('services')
+  @Get('worker_services')
   getallworkerservices() {
     return this.userService.getallworkersservices();
   }

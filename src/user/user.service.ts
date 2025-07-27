@@ -40,10 +40,32 @@ export class UserService {
 
   async getallworkersservices(){
 
-     return await this.workerservicesrepo.find({
+    var list =await this.workerservicesrepo.find({
       skip: 0,
       take: 10,
     });
+
+   
+  const result = await Promise.all(
+    list.map(async (item) => {
+      const worker = await this.workerRepo.findOne({
+        where: { userId: item.workerId },
+      });
+
+      const service = await this.servicesrepo.findOne({
+        where: { id: item.serviceId },
+      });
+
+      return {
+        ...item,
+        workerInfo: worker,
+        serviceInfo: service,
+      };
+    })
+  );
+ 
+
+     return 
 
   }
 
