@@ -44,7 +44,12 @@ async addService(
   @Req() req,
   @Param('serviceId',ParseIntPipe) serviceId: number,
 ) {
-  return this.workerService.addServiceToWorker(req.user.id, serviceId);
+  try {
+    
+    return this.workerService.addServiceToWorker(req.user.id, serviceId);
+  } catch (error) {
+    console.log(`${error.message}`)
+  }
 }
 
   @UseGuards(JwtAuthGuard)
