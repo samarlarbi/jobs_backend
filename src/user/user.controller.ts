@@ -43,11 +43,13 @@ export class UserController {
   create(@Body() dto: CreateUserDto) {
     return this.userService.create(dto);
   }
+    @UseGuards(JwtAuthGuard)
+
   @Post('worker')
-  createworker(@Body() dto:  CreateUserWorkerDto |CreateWorkerDto ) {
+  createworker(@Req() req ,@Body() dto:  CreateUserWorkerDto |CreateWorkerDto ) {
     dto.role=Role.WORKER
     console.log(dto);
-    console.log(dto.userId);
+    dto.userId = req.user.id
     return this.userService.createWorker(dto);
   }
 

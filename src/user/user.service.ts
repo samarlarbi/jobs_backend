@@ -16,6 +16,7 @@ import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { ReservationService } from '../reservation/reservation.service';
 import { Repository } from 'typeorm';
+import { WorkerServices } from 'src/entities/worker_service.entity';
 
 @Injectable()
 export class UserService {
@@ -26,6 +27,8 @@ export class UserService {
     private workerRepo: Repository<WorkerInfo>,
        @InjectRepository(Service)
     private servicesrepo: Repository<Service>,
+    @InjectRepository(WorkerServices)
+    private workerservicesrepo : Repository<WorkerServices>
   ) {}
 
   async getallservices(){
@@ -34,6 +37,16 @@ export class UserService {
       take: 10,
     });
   }
+
+  async getallworkersservices(){
+
+     return await this.workerservicesrepo.find({
+      skip: 0,
+      take: 10,
+    });
+
+  }
+
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
       const worker = await this.workerRepo.findOne({
