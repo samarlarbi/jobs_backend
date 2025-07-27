@@ -47,7 +47,7 @@ export class UserService {
 
    
   const result = await Promise.all(
-    list.map(async (item) => {
+     list.map(async (item) => {
       const worker = await this.workerRepo.findOne({
         where: { userId: item.workerId },
       });
@@ -64,8 +64,7 @@ export class UserService {
     })
   );
  
-
-     return 
+return result
 
   }
 
