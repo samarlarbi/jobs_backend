@@ -16,9 +16,10 @@ import { Reservation } from '../entities/reservation.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { OffShift } from '../entities/offShift.entity';
 import { Service } from '../entities/service.entity';
+import { WorkerServices } from '../entities/worker_service.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo,OffShift,Service]),
+  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo,OffShift,Service,WorkerServices]),
 JwtModule.registerAsync(jwtConfig.asProvider()),
 ConfigModule.forFeature(jwtConfig),
 ConfigModule.forFeature(refrechJwtConfig),

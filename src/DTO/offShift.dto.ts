@@ -3,6 +3,7 @@ import { WorkerInfo } from '../entities/worker.entity';
 
 export class OffShiftDto {
 @IsOptional()
+
   @IsNumber()
   worker:WorkerInfo
 
