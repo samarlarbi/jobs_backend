@@ -42,7 +42,7 @@ export class WorkerController {
 @Post('services/:serviceId')
 async addService(
   @Req() req,
-  @Param('serviceId') serviceId: number,
+  @Param('serviceId',ParseIntPipe) serviceId: number,
 ) {
   return this.workerService.addServiceToWorker(req.user.id, serviceId);
 }
