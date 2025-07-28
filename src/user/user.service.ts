@@ -15,8 +15,10 @@ import { Service } from '../entities/service.entity';
 import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { ReservationService } from '../reservation/reservation.service';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { WorkerServices } from '../entities/worker_service.entity';
+import { OffShift } from 'src/entities/offShift.entity';
+import { Reservation } from 'src/entities/reservation.entity';
 
 @Injectable()
 export class UserService {
@@ -25,53 +27,82 @@ export class UserService {
     private reservationservice: ReservationService,
     @InjectRepository(WorkerInfo)
     private workerRepo: Repository<WorkerInfo>,
-       @InjectRepository(Service)
+    @InjectRepository(Service)
     private servicesrepo: Repository<Service>,
     @InjectRepository(WorkerServices)
-    private workerservicesrepo : Repository<WorkerServices>
+    private workerservicesrepo: Repository<WorkerServices>,
+    @InjectRepository(OffShift)
+    private offshiftrepo: Repository<OffShift>,
+    @InjectRepository(Reservation)
+    private reservationrepo: Repository<Reservation>,
   ) {}
 
-  async getallservices(){
-       return await this.servicesrepo.find({
+  async getallservices() {
+    return await this.servicesrepo.find({
       skip: 0,
       take: 10,
     });
   }
 
-  async getallworkersservices(){
-
-    var list =await this.workerservicesrepo.find({
+  async getallworkersservices() {
+    var list = await this.workerservicesrepo.find({
       skip: 0,
       take: 10,
     });
 
-   
-  const result = await Promise.all(
-     list.map(async (item) => {
-      const worker = await this.userRepo.findOne({
-        where: { id: item.workerId },
-      });
+    const today = new Date();
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0];
 
-      const service = await this.servicesrepo.findOne({
-        where: { id: item.serviceId },
-      });
+    const currentTime = now.toTimeString().split(':').slice(0, 2).join(':');
 
-      return {
-        ...item,
-        workerInfo: worker,
-        serviceInfo: service,
-      };
-    })
-  );
- 
-return result
+    const result = await Promise.all(
+      list.map(async (item) => {
+        const worker = await this.userRepo.findOne({
+          where: { id: item.workerId },
+        });
 
+        const service = await this.servicesrepo.findOne({
+          where: { id: item.serviceId },
+        });
+
+        const isOffNow = await this.offshiftrepo.findOne({
+          where: {
+            worker: { userId: item.workerId },
+
+            day: currentDate,
+            startTime: LessThanOrEqual(currentTime),
+            endTime: MoreThanOrEqual(currentTime),
+          },
+        });
+        const hasReservationNow = await this.reservationrepo.findOne({
+          where: {
+            worker: { userId: item.workerId },
+
+            day: currentDate,
+            startTime: LessThanOrEqual(currentTime),
+            endTime: MoreThanOrEqual(currentTime),
+          },
+        });
+
+        return {
+          ...item,
+          isOffNow: !!isOffNow,
+          hasReservationNow: !!hasReservationNow,
+
+          workerInfo: worker,
+          serviceInfo: service,
+        };
+      }),
+    );
+
+    return result;
   }
 
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
       const worker = await this.workerRepo.findOne({
-        where: {          
+        where: {
           userId: dto.userId,
         },
       });
