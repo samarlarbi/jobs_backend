@@ -19,6 +19,7 @@ import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { WorkerServices } from '../entities/worker_service.entity';
 import { OffShift } from 'src/entities/offShift.entity';
 import { Reservation } from 'src/entities/reservation.entity';
+import { format, toZonedTime } from 'date-fns-tz';
 
 @Injectable()
 export class UserService {
@@ -51,8 +52,11 @@ export class UserService {
 
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
-const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`; // HH:mm:ss
 
+const timeZone = 'Africa/Tunis'; // Tunisia timezone
+
+const zonedDate = toZonedTime(now, timeZone);
+const currentTime = format(zonedDate, 'HH:mm:ss');
     const result = await Promise.all(
       list.map(async (item) => {
         const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
