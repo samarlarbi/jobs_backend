@@ -42,62 +42,52 @@ export class UserService {
       skip: 0,
       take: 10,
     });
-  }
+  }async getallworkersservices() {
+  const list = await this.workerservicesrepo.find({
+    skip: 0,
+    take: 10,
+  });
 
-  async getallworkersservices() {
-    var list = await this.workerservicesrepo.find({
-      skip: 0,
-      take: 10,
-    });
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
+  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // 'HH:mm'
 
-    const today = new Date();
-    const now = new Date();
-    const currentDate = now.toISOString().split('T')[0];
-
-    const currentTime = now.toTimeString().split(':').slice(0, 2).join(':');
-
-    const result = await Promise.all(
-      list.map(async (item) => {
-        const worker = await this.userRepo.findOne({
-          where: { id: item.workerId },
-        });
-
-        const service = await this.servicesrepo.findOne({
-          where: { id: item.serviceId },
-        });
-
-        const isOffNow = await this.offshiftrepo.findOne({
+  const result = await Promise.all(
+    list.map(async (item) => {
+      const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
+        this.userRepo.findOne({ where: { id: item.workerId } }),
+        this.servicesrepo.findOne({ where: { id: item.serviceId } }),
+        this.offshiftrepo.findOne({
           where: {
-            worker: { userId: item.workerId },
-
+            worker: { userId: item.worker.userId },
             day: currentDate,
             startTime: LessThanOrEqual(currentTime),
             endTime: MoreThanOrEqual(currentTime),
           },
-        });
-        const hasReservationNow = await this.reservationrepo.findOne({
+        }),
+        this.reservationrepo.findOne({
           where: {
             worker: { userId: item.workerId },
-
             day: currentDate,
             startTime: LessThanOrEqual(currentTime),
             endTime: MoreThanOrEqual(currentTime),
           },
-        });
+        }),
+      ]);
 
-        return {
-          ...item,
-          isOffNow: !!isOffNow,
-          hasReservationNow: !!hasReservationNow,
+      return {
+        ...item,
+        isOffNow: isOffNow ? false:true,
+        hasReservationNow: !!hasReservationNow,
+        workerInfo: worker,
+        serviceInfo: service,
+      };
+    }),
+  );
 
-          workerInfo: worker,
-          serviceInfo: service,
-        };
-      }),
-    );
+  return result;
+}
 
-    return result;
-  }
 
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
