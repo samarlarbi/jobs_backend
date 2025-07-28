@@ -55,6 +55,7 @@ export class UserService {
 
   const result = await Promise.all(
     list.map(async (item) => {
+      console.log(item);
       const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
         this.userRepo.findOne({ where: { id: item.workerId } }),
         this.servicesrepo.findOne({ where: { id: item.serviceId } }),
@@ -80,8 +81,8 @@ export class UserService {
 console.log(hasReservationNow);
       return {
         ...item,
-        isOffNow: !!isOffNow,
-        hasReservationNow: !!hasReservationNow,
+        isOffNow: isOffNow!=null,
+        hasReservationNow: isOffNow!=null,
         workerInfo: worker,
         serviceInfo: service,
       };
