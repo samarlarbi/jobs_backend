@@ -21,6 +21,9 @@ export class WorkerInfo {
   @PrimaryColumn()
      userId: number;
 
+  @Column({nullable:true})
+  description:string
+
   @OneToOne(() => User, (user) => user.worker, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;

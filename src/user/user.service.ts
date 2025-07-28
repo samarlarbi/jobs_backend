@@ -44,6 +44,10 @@ export class UserService {
       take: 10,
     });
   }
+
+
+
+
   async getallworkersservices() {
    const list = await this.workerservicesrepo.find({
       skip: 0,
@@ -183,7 +187,18 @@ console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow
         id,
       },
     });
-    if (!user) throw new NotFoundException();
+        if (!user) throw new NotFoundException();
+
+if(user.role == Role.WORKER) {   
+  const   services= await  this.servicesrepo.findOne({ where: { id: id} })
+  const   workerinfo= await  this.workerRepo.findOne({ where: { userId: id} })
+  
+ return {
+       user,
+       services: services,
+       workerinfo: workerinfo,
+        }
+}
     return user;
   }
 

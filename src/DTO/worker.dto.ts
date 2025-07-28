@@ -5,6 +5,10 @@ import { Role } from "../auth/enums/role.enum";
 export class CreateWorkerDto {
     @IsString()
      role=Role.WORKER
+
+     @IsString()
+     @IsOptional()
+     description:string
      @IsNumber()
   userId: number;
   @IsOptional()
