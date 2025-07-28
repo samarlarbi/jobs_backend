@@ -53,10 +53,9 @@ export class UserService {
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
   const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // 'HH:mm'
-
+console.log(this.offshiftrepo.find());
   const result = await Promise.all(
     list.map(async (item) => {
-      console.log(item);
       const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
         this.userRepo.findOne({ where: { id: item.workerId } }),
         this.servicesrepo.findOne({ where: { id: item.serviceId } }),
