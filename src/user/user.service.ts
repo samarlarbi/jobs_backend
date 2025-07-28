@@ -74,8 +74,10 @@ export class UserService {
             endTime: MoreThanOrEqual(currentTime),
           },
         }),
+        
       ]);
-
+        console.log(isOffNow);
+console.log(hasReservationNow);
       return {
         ...item,
         isOffNow: !!isOffNow,
