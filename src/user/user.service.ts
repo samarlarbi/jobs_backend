@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 import { Role } from '../auth/enums/role.enum';
 import { CreateUserWorkerDto } from '../DTO/creteuser-worker.dto';
 import { PaginationDTO } from '../DTO/pagination.dto';
@@ -15,32 +14,37 @@ import { CreateWorkerDto } from '../DTO/worker.dto';
 import { Service } from '../entities/service.entity';
 import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
+import { ReservationService } from '../reservation/reservation.service';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { WorkerServices } from '../entities/worker_service.entity';
 import { OffShift } from 'src/entities/offShift.entity';
 import { Reservation } from 'src/entities/reservation.entity';
-import { ReservationService } from '../reservation/reservation.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     private reservationservice: ReservationService,
-    @InjectRepository(WorkerInfo) private workerRepo: Repository<WorkerInfo>,
-    @InjectRepository(Service) private servicesrepo: Repository<Service>,
-    @InjectRepository(WorkerServices) private workerservicesrepo: Repository<WorkerServices>,
-    @InjectRepository(OffShift) private offshiftrepo: Repository<OffShift>,
-    @InjectRepository(Reservation) private reservationrepo: Repository<Reservation>,
+    @InjectRepository(WorkerInfo)
+    private workerRepo: Repository<WorkerInfo>,
+    @InjectRepository(Service)
+    private servicesrepo: Repository<Service>,
+    @InjectRepository(WorkerServices)
+    private workerservicesrepo: Repository<WorkerServices>,
+    @InjectRepository(OffShift)
+    private offshiftrepo: Repository<OffShift>,
+    @InjectRepository(Reservation)
+    private reservationrepo: Repository<Reservation>,
   ) {}
 
-  async getAllServices() {
+  async getallservices() {
     return await this.servicesrepo.find({
       skip: 0,
       take: 10,
     });
   }
-
   async getallworkersservices() {
-    const list = await this.workerservicesrepo.find({
+   const list = await this.workerservicesrepo.find({
       skip: 0,
       take: 10,
     });
@@ -83,90 +87,108 @@ export class UserService {
     );
 
     return result;
-  }
+}
 
-  async createworker(dto: CreateWorkerDto | CreateUserWorkerDto) {
+
+  async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
-      const existingWorker = await this.workerRepo.findOne({
-        where: { userId: dto.userId },
+      const worker = await this.workerRepo.findOne({
+        where: {
+          userId: dto.userId,
+        },
+      });
+      console.log(worker);
+      if (worker) throw new ConflictException('worker already created');
+
+      const user = await this.userRepo.find({
+        where: {
+          id: dto.userId,
+        },
       });
 
-      if (existingWorker) {
-        throw new ConflictException('Worker already exists');
-      }
-
-      const user = await this.userRepo.findOne({
-        where: { id: dto.userId },
-      });
-
-      if (user) {
+      if (user.length == 1) {
         await this.userRepo.update({ id: dto.userId }, { role: Role.WORKER });
-        const newWorker = this.workerRepo.create(dto);
+        const newWorker = await this.workerRepo.create(dto);
         return this.workerRepo.save(newWorker);
       }
     } else {
       try {
-        const newUser = await this.create(dto as CreateUserWorkerDto);
-        dto.userId = newUser.id;
-        const newWorker = this.workerRepo.create(dto);
+        console.log('**************');
+        console.log(dto);
+
+        const newuser = await this.create(dto as CreateUserWorkerDto);
+        dto.userId = newuser.id;
+        const newWorker = await this.workerRepo.create(dto);
         return this.workerRepo.save(newWorker);
       } catch (error) {
-        throw new ConflictException('Error creating worker, try again!');
+        throw new ConflictException('error , try again !');
       }
     }
   }
 
-  async checkemail(email: string) {
-    const existingUser = await this.userRepo.findOne({
-      where: { email },
-    });
+  async createReservation(cliendid: any, dto: any) {
+    // return this.reservationservice.createreservation(dto);
+  }
 
+  async checkemail(emaill: string) {
+    const existingUser = await this.userRepo.findOne({
+      where: { email: emaill },
+    });
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
   }
 
   async create(dto: CreateUserDto | CreateUserWorkerDto) {
+    console.log(dto);
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
     });
-
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
 
-    const user = this.userRepo.create(dto);
-    return this.userRepo.save(user);
+    const user = await this.userRepo.create(dto);
+
+    return await this.userRepo.save(user);
   }
 
-  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
-    return this.userRepo.update({ id: userId }, { hashedRefreshToken });
+  async updateHashedRefreshToken(userid: number, hashedRefreshToken) {
+    return await this.userRepo.update({ id: userid }, { hashedRefreshToken });
   }
 
-  async findAll(pagination: PaginationDTO) {
-    return this.userRepo.find({
-      skip: pagination.skip,
-      take: pagination.limit ?? 10,
+  async findAll(paginationdto: PaginationDTO) {
+    return await this.userRepo.find({
+      skip: paginationdto.skip,
+      take: paginationdto.limit ?? 10,
     });
   }
 
-  async findbyemail(email: string) {
-    return this.userRepo.findOne({
-      where: { email },
+  async findByEmail(email: string) {
+    return await this.userRepo.findOne({
+      where: {
+        email,
+      },
     });
   }
 
   async findOne(id: number) {
-    const user = await this.userRepo.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+      },
+    });
+    if (!user) throw new NotFoundException();
     return user;
   }
 
   async update(id: number, dto: UpdateUserDto) {
-    return this.userRepo.update({ id }, dto);
+    return await this.userRepo.update({ id }, dto);
   }
 
   async delete(id: number) {
-    return this.userRepo.delete({ id });
+    return await this.userRepo.delete({
+      id,
+    });
   }
 }
