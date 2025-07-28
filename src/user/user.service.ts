@@ -42,7 +42,8 @@ export class UserService {
       skip: 0,
       take: 10,
     });
-  }async getallworkersservices() {
+  }
+  async getallworkersservices() {
   const list = await this.workerservicesrepo.find({
     skip: 0,
     take: 10,
@@ -77,7 +78,7 @@ export class UserService {
 
       return {
         ...item,
-        isOffNow: isOffNow ? false:true,
+        isOffNow: !!isOffNow,
         hasReservationNow: !!hasReservationNow,
         workerInfo: worker,
         serviceInfo: service,
