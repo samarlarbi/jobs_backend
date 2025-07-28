@@ -5,36 +5,34 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+
 import { Role } from '../auth/enums/role.enum';
 import { CreateUserWorkerDto } from '../DTO/creteuser-worker.dto';
 import { PaginationDTO } from '../DTO/pagination.dto';
 import { UpdateUserDto } from '../DTO/updateUser.dto';
 import { CreateUserDto } from '../DTO/user.dto';
 import { CreateWorkerDto } from '../DTO/worker.dto';
-import { Service } from '../entities/service.entity';
+
 import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
-import { ReservationService } from '../reservation/reservation.service';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { Service } from '../entities/service.entity';
 import { WorkerServices } from '../entities/worker_service.entity';
-import { OffShift } from 'src/entities/offShift.entity';
-import { Reservation } from 'src/entities/reservation.entity';
+import { OffShift } from '../entities/offShift.entity';
+import { Reservation } from '../entities/reservation.entity';
+
+import { ReservationService } from '../reservation/reservation.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User) private userRepo: Repository<User>,
     private reservationservice: ReservationService,
-    @InjectRepository(WorkerInfo)
-    private workerRepo: Repository<WorkerInfo>,
-    @InjectRepository(Service)
-    private servicesrepo: Repository<Service>,
-    @InjectRepository(WorkerServices)
-    private workerservicesrepo: Repository<WorkerServices>,
-    @InjectRepository(OffShift)
-    private offshiftrepo: Repository<OffShift>,
-    @InjectRepository(Reservation)
-    private reservationrepo: Repository<Reservation>,
+    @InjectRepository(WorkerInfo) private workerRepo: Repository<WorkerInfo>,
+    @InjectRepository(Service) private servicesrepo: Repository<Service>,
+    @InjectRepository(WorkerServices) private workerservicesrepo: Repository<WorkerServices>,
+    @InjectRepository(OffShift) private offshiftrepo: Repository<OffShift>,
+    @InjectRepository(Reservation) private reservationrepo: Repository<Reservation>,
   ) {}
 
   async getallservices() {
@@ -43,155 +41,143 @@ export class UserService {
       take: 10,
     });
   }
+
   async getallworkersservices() {
-  const list = await this.workerservicesrepo.find({
-    skip: 0,
-    take: 10,
-  });
+    const list = await this.workerservicesrepo.find({
+      skip: 0,
+      take: 10,
+    });
 
-  const now = new Date();
-  const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
-  const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // 'HH:mm'
+    const now = new Date();
+    const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // 'HH:mm'
 
-  const result = await Promise.all(
-    list.map(async (item) => {
-      console.log(item);
-      const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
-        this.userRepo.findOne({ where: { id: item.workerId } }),
-        this.servicesrepo.findOne({ where: { id: item.serviceId } }),
-        this.offshiftrepo.findOne({
-          where: {
-            worker: { userId:item.workerId  },
-            day: currentDate,
-            startTime: LessThanOrEqual(currentTime),
-            endTime: MoreThanOrEqual(currentTime),
-          },
-        }),
-        this.reservationrepo.findOne({
-          where: {
-            worker: { userId: item.workerId },
-            day: currentDate,
-            startTime: LessThanOrEqual(currentTime),
-            endTime: MoreThanOrEqual(currentTime),
-          },
-        }),
-        
-      ]);
-        console.log(isOffNow);
-console.log(hasReservationNow);
-      return {
-        ...item,
-        isOffNow: isOffNow!=null,
-        hasReservationNow: isOffNow!=null,
-        workerInfo: worker,
-        serviceInfo: service,
-      };
-    }),
-  );
+    const result = await Promise.all(
+      list.map(async (item) => {
+        const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
+          this.userRepo.findOne({ where: { id: item.workerId } }),
+          this.servicesrepo.findOne({ where: { id: item.serviceId } }),
+          this.offshiftrepo.findOne({
+            where: {
+              worker: { userId: item.workerId },
+              day: currentDate,
+              startTime: LessThanOrEqual(currentTime),
+              endTime: MoreThanOrEqual(currentTime),
+            },
+          }),
+          this.reservationrepo.findOne({
+            where: {
+              worker: { userId: item.workerId },
+              day: currentDate,
+              startTime: LessThanOrEqual(currentTime),
+              endTime: MoreThanOrEqual(currentTime),
+            },
+          }),
+        ]);
 
-  return result;
-}
+        return {
+          ...item,
+          isOffNow: !!isOffNow,
+          hasReservationNow: !!hasReservationNow,
+          workerInfo: worker,
+          serviceInfo: service,
+        };
+      }),
+    );
 
+    return result;
+  }
 
   async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
       const worker = await this.workerRepo.findOne({
-        where: {
-          userId: dto.userId,
-        },
+        where: { userId: dto.userId },
       });
-      console.log(worker);
-      if (worker) throw new ConflictException('worker already created');
+
+      if (worker) {
+        throw new ConflictException('Worker already created');
+      }
 
       const user = await this.userRepo.find({
-        where: {
-          id: dto.userId,
-        },
+        where: { id: dto.userId },
       });
 
-      if (user.length == 1) {
+      if (user.length === 1) {
         await this.userRepo.update({ id: dto.userId }, { role: Role.WORKER });
-        const newWorker = await this.workerRepo.create(dto);
+        const newWorker = this.workerRepo.create(dto);
         return this.workerRepo.save(newWorker);
       }
     } else {
       try {
-        console.log('**************');
-        console.log(dto);
+        const newUser = await this.create(dto as CreateUserWorkerDto);
+        dto.userId = newUser.id;
 
-        const newuser = await this.create(dto as CreateUserWorkerDto);
-        dto.userId = newuser.id;
-        const newWorker = await this.workerRepo.create(dto);
+        const newWorker = this.workerRepo.create(dto);
         return this.workerRepo.save(newWorker);
       } catch (error) {
-        throw new ConflictException('error , try again !');
+        throw new ConflictException('Error, try again!');
       }
     }
   }
 
-  async createReservation(cliendid: any, dto: any) {
+  async createReservation(clientId: any, dto: any) {
+    // Implement this when needed
     // return this.reservationservice.createreservation(dto);
   }
 
-  async checkemail(emaill: string) {
+  async checkemail(email: string) {
     const existingUser = await this.userRepo.findOne({
-      where: { email: emaill },
+      where: { email },
     });
+
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
   }
 
   async create(dto: CreateUserDto | CreateUserWorkerDto) {
-    console.log(dto);
     const existingUser = await this.userRepo.findOne({
       where: { email: dto.email },
     });
+
     if (existingUser) {
       throw new ConflictException('Email already exists');
     }
 
-    const user = await this.userRepo.create(dto);
-
-    return await this.userRepo.save(user);
+    const user = this.userRepo.create(dto);
+    return this.userRepo.save(user);
   }
 
-  async updateHashedRefreshToken(userid: number, hashedRefreshToken) {
-    return await this.userRepo.update({ id: userid }, { hashedRefreshToken });
+  async updateHashedRefreshToken(userId: number, hashedRefreshToken: string) {
+    return this.userRepo.update({ id: userId }, { hashedRefreshToken });
   }
 
-  async findAll(paginationdto: PaginationDTO) {
-    return await this.userRepo.find({
-      skip: paginationdto.skip,
-      take: paginationdto.limit ?? 10,
+  async findAll(paginationDto: PaginationDTO) {
+    return this.userRepo.find({
+      skip: paginationDto.skip,
+      take: paginationDto.limit ?? 10,
     });
   }
 
   async findByEmail(email: string) {
-    return await this.userRepo.findOne({
-      where: {
-        email,
-      },
-    });
+    return this.userRepo.findOne({ where: { email } });
   }
 
   async findOne(id: number) {
-    const user = await this.userRepo.findOne({
-      where: {
-        id,
-      },
-    });
-    if (!user) throw new NotFoundException();
+    const user = await this.userRepo.findOne({ where: { id } });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
     return user;
   }
 
   async update(id: number, dto: UpdateUserDto) {
-    return await this.userRepo.update({ id }, dto);
+    return this.userRepo.update({ id }, dto);
   }
 
   async delete(id: number) {
-    return await this.userRepo.delete({
-      id,
-    });
+    return this.userRepo.delete({ id });
   }
 }
