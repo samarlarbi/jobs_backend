@@ -180,8 +180,15 @@ console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow
       },
     });
   }
-
-  async findOne(id: number) {
+ async findOne(id: number) {
+    const user = await this.userRepo.findOne({
+      where: {
+        id,
+      },
+    });
+            if (!user) throw new NotFoundException();
+ return user}
+  async getprofile(id: number) {
     const user = await this.userRepo.findOne({
       where: {
         id,
@@ -189,7 +196,7 @@ console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow
     });
         if (!user) throw new NotFoundException();
 
-if(user.role == Role.WORKER) {   
+if(user?.role == Role.WORKER) {   
   const   services= await  this.servicesrepo.findOne({ where: { id: id} })
   const   workerinfo= await  this.workerRepo.findOne({ where: { userId: id} })
   
