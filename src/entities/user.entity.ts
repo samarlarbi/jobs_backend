@@ -25,6 +25,8 @@ export class User {
   role: Role;
   @Column()
   name: String;
+  @Column({ nullable: true })
+  imgprofile: String;
   @Column({ unique: true })
   email: String;
   @Column()
