@@ -198,7 +198,7 @@ console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow
 
 if(user?.role == Role.WORKER) {   
    
-const [worker,service]=await Promise.all([
+const [service,worker]=await Promise.all([
        this.servicesrepo.findOne({ where: { id: id} }),
     this.workerRepo.findOne({ where: { userId: id} })])
 
