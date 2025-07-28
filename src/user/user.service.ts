@@ -188,26 +188,40 @@ console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow
     });
             if (!user) throw new NotFoundException();
  return user}
-  async getprofile(id: number) {
-    const user = await this.userRepo.findOne({
-      where: {
-        id,
-      },
-    });
-        if (!user) throw new NotFoundException();
+ async getprofile(id: number) {
+  const user = await this.userRepo.findOne({
+    where: { id },
+    relations: ['worker'],
+  });
 
-if(user?.role == Role.WORKER) {   
-  const   services= await  this.servicesrepo.findOne({ where: { id: id} })
-  const   workerinfo= await  this.workerRepo.findOne({ where: { userId: id} })
-  
- return {
-       user,
-       services: services,
-       workerinfo: workerinfo,
-        }
-}
-    return user;
+  if (!user) {
+    throw new NotFoundException('User not found');
   }
+
+  if (user.role === Role.WORKER) {
+    const workerInfo = await this.workerRepo.findOne({
+      where: { userId: id },
+    });
+
+    if (!workerInfo) {
+      throw new NotFoundException('Worker info not found');
+    }
+
+    const services = await this.servicesrepo.find({
+      where: { workers: { userId: workerInfo.userId } }, 
+      relations: ['worker'],
+    });
+
+    return {
+      user,
+      workerInfo,
+      services,
+    };
+  }
+
+  return user;
+}
+
 
   async update(id: number, dto: UpdateUserDto) {
     return await this.userRepo.update({ id }, dto);
