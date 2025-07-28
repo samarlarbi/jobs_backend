@@ -71,9 +71,9 @@ export class UserController {
   //   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('profile')
-  getProfile(@Req() req) {
-    return this.userService.getprofile(req.user.id);
+  @Get('profile/:id')
+  getProfile(@Req() req,@Param('id', ParseIntPipe) id) {
+    return this.userService.getprofile(id);
   }
 
   @UseGuards(JwtAuthGuard)
