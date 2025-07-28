@@ -51,11 +51,8 @@ export class UserService {
 
     const now = new Date();
     const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
-    const currentTime =  now.toLocaleTimeString('en-GB', {
-  hour: '2-digit',
-  minute: '2-digit',
-  hour12: false,
-});
+const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`; // HH:mm:ss
+
     const result = await Promise.all(
       list.map(async (item) => {
         const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
@@ -78,6 +75,7 @@ export class UserService {
             },
           }),
         ]);
+console.log({ currentTime, dbStartTime: isOffNow?.startTime, dbEndTime: isOffNow?.endTime });
 
         return {
           ...item,
