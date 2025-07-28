@@ -26,35 +26,35 @@ export class UserService {
     @InjectRepository(User) private userRepo: Repository<User>,
     private reservationservice: ReservationService,
     @InjectRepository(WorkerInfo) private workerRepo: Repository<WorkerInfo>,
-    @InjectRepository(Service) private servicesRepo: Repository<Service>,
-    @InjectRepository(WorkerServices) private workerServicesRepo: Repository<WorkerServices>,
-    @InjectRepository(OffShift) private offShiftRepo: Repository<OffShift>,
-    @InjectRepository(Reservation) private reservationRepo: Repository<Reservation>,
+    @InjectRepository(Service) private servicesrepo: Repository<Service>,
+    @InjectRepository(WorkerServices) private workerservicesrepo: Repository<WorkerServices>,
+    @InjectRepository(OffShift) private offshiftrepo: Repository<OffShift>,
+    @InjectRepository(Reservation) private reservationrepo: Repository<Reservation>,
   ) {}
 
   async getAllServices() {
-    return await this.servicesRepo.find({
+    return await this.servicesrepo.find({
       skip: 0,
       take: 10,
     });
   }
 
-  async getAllWorkersServices() {
-    const list = await this.workerServicesRepo.find({
+  async getallworkersservices() {
+    const list = await this.workerservicesrepo.find({
       skip: 0,
       take: 10,
     });
 
     const now = new Date();
-    const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
-    const currentTime = now.toTimeString().slice(0, 5); // HH:mm
+    const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`; // 'HH:mm'
 
     const result = await Promise.all(
       list.map(async (item) => {
         const [worker, service, isOffNow, hasReservationNow] = await Promise.all([
           this.userRepo.findOne({ where: { id: item.workerId } }),
-          this.servicesRepo.findOne({ where: { id: item.serviceId } }),
-          this.offShiftRepo.findOne({
+          this.servicesrepo.findOne({ where: { id: item.serviceId } }),
+          this.offshiftrepo.findOne({
             where: {
               worker: { userId: item.workerId },
               day: currentDate,
@@ -62,7 +62,7 @@ export class UserService {
               endTime: MoreThanOrEqual(currentTime),
             },
           }),
-          this.reservationRepo.findOne({
+          this.reservationrepo.findOne({
             where: {
               worker: { userId: item.workerId },
               day: currentDate,
@@ -85,7 +85,7 @@ export class UserService {
     return result;
   }
 
-  async createWorker(dto: CreateWorkerDto | CreateUserWorkerDto) {
+  async createworker(dto: CreateWorkerDto | CreateUserWorkerDto) {
     if (dto.userId) {
       const existingWorker = await this.workerRepo.findOne({
         where: { userId: dto.userId },
@@ -116,7 +116,7 @@ export class UserService {
     }
   }
 
-  async checkEmail(email: string) {
+  async checkemail(email: string) {
     const existingUser = await this.userRepo.findOne({
       where: { email },
     });
@@ -150,7 +150,7 @@ export class UserService {
     });
   }
 
-  async findByEmail(email: string) {
+  async findbyemail(email: string) {
     return this.userRepo.findOne({
       where: { email },
     });

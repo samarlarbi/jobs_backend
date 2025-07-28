@@ -37,7 +37,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Get('services')
   getallservices() {
-    return this.userService.getallservices();
+    return this.userService.getAllServices();
   }
 
   @UseGuards(JwtAuthGuard)
@@ -57,7 +57,7 @@ export class UserController {
     dto.role = Role.WORKER;
     console.log(dto);
     dto.userId = req.user.id;
-    return this.userService.createWorker(dto);
+    return this.userService.createworker(dto);
   }
   @UseGuards(JwtAuthGuard)
   @Get()
