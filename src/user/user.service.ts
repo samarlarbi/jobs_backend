@@ -48,6 +48,7 @@ export class UserService {
     skip: 0,
     take: 10,
   });
+  console.log(list);
 
   const now = new Date();
   const currentDate = now.toISOString().split('T')[0]; // e.g., '2025-07-28'
