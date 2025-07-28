@@ -59,7 +59,7 @@ export class UserService {
         this.servicesrepo.findOne({ where: { id: item.serviceId } }),
         this.offshiftrepo.findOne({
           where: {
-            worker: { userId: item.worker.userId },
+            worker: { userId:item.workerId  },
             day: currentDate,
             startTime: LessThanOrEqual(currentTime),
             endTime: MoreThanOrEqual(currentTime),
