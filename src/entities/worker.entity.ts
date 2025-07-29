@@ -11,8 +11,6 @@ import {
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Reservation } from './reservation.entity';
-import { Service } from './service.entity';
 import { OffShift } from './offShift.entity';
 import { WorkerServices } from './worker_service.entity';
 

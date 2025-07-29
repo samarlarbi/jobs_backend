@@ -6,13 +6,12 @@ import {
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
-import { WorkerInfo } from './worker.entity';
 
 import { User } from './user.entity';
 import { WorkerServices } from './worker_service.entity';
 
 @Entity()
-@Unique(['worker','client','day','startTime','endTime'])
+@Unique(['service','client','day','startTime','endTime'])
 export class Reservation {
   @PrimaryGeneratedColumn()
   id: number;
