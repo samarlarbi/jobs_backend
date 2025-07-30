@@ -56,7 +56,7 @@ const offshiftexist = await this.offshiftrepo
     startTime: dto.startTime,
     endTime: dto.endTime,
    status: dto.status || 'pending',
-    serviceId: {id: dto.serviceId  }, 
+    service: {id: dto.serviceId  }, 
     client: { id: dto.client } 
   };
   try {
