@@ -79,7 +79,14 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @Post('reservation')
   createreservation(@Req() req, @Body() body: reservationDTO) {
+    try{
+    body.client=req.user.id
     return this.reservationService.createreservation(body);
+    }
+    catch(e){
+      console.log("error----"+e)
+
+    }
   }
 
   @Roles(Role.WORKER)

@@ -7,7 +7,7 @@ export class reservationDTO{
   serviceId: number;
 
     @IsString()
-    status="Pending"
+status: string = 'pending';
     @IsDateString({},{ message: 'day must be a valid ISO date string (YYYY-MM-DD)' })
       day: string;
     

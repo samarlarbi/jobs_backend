@@ -33,12 +33,14 @@ const worker= await this.workerrepo.findOne({
     
   }
 })
-
+if (!worker) {
+      throw new NotFoundException(`Worker service with ID ${dto.serviceId} not found`);
+    }
 
 
 const offshiftexist = await this.offshiftrepo
   .createQueryBuilder('off')
-  .where('off.workerUserId = :workerId', { workerId: worker?.workerId })
+  .where('off.workerUserId = :workerId', { workerId: worker.workerId })
   .andWhere('off.day = :day', { day: dto.day })
   .andWhere('off.startTime < :endTime', { endTime: dto.endTime })
   .andWhere('off.endTime > :startTime', { startTime: dto.startTime })
@@ -53,7 +55,7 @@ const offshiftexist = await this.offshiftrepo
     day: dto.day,
     startTime: dto.startTime,
     endTime: dto.endTime,
-    status: dto.status,
+   status: dto.status || 'pending',
     service: { serviceId: dto.serviceId } , 
     client: { id: dto.client } 
   };
