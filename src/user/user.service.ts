@@ -75,8 +75,7 @@ const currentTime = format(zonedDate, 'HH:mm:ss');
             },
           }),
           this.reservationrepo.findOne({
-            where: {
-              worker: { userId: item.workerId },
+            where: {id: item.serviceId ,
               day: currentDate,
               startTime: LessThanOrEqual(currentTime),
               endTime: MoreThanOrEqual(currentTime),

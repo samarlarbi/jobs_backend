@@ -12,6 +12,7 @@ import { UpdateReservationDTO } from '../DTO/updatereservation.dto';
 import { OffShift } from '../entities/offShift.entity';
 import { Reservation } from '../entities/reservation.entity';
 import { Repository } from 'typeorm';
+import { WorkerServices } from '../entities/worker_service.entity';
 
 @Injectable()
 export class ReservationService {
@@ -20,13 +21,24 @@ export class ReservationService {
     private reservationrepo: Repository<Reservation>,
  @InjectRepository(OffShift)
     private offshiftrepo: Repository<OffShift>,
+     @InjectRepository(WorkerServices)
+    private workerrepo: Repository<WorkerServices>,
+
   ) {}
 async createreservation(dto: reservationDTO) {
+
+const worker= await this.workerrepo.findOne({
+  where:{
+    id:dto.serviceId
+    
+  }
+})
+
 
 
 const offshiftexist = await this.offshiftrepo
   .createQueryBuilder('off')
-  .where('off.workerUserId = :workerId', { workerId: dto.worker })
+  .where('off.workerUserId = :workerId', { workerId: worker?.workerId })
   .andWhere('off.day = :day', { day: dto.day })
   .andWhere('off.startTime < :endTime', { endTime: dto.endTime })
   .andWhere('off.endTime > :startTime', { startTime: dto.startTime })
@@ -42,7 +54,7 @@ const offshiftexist = await this.offshiftrepo
     startTime: dto.startTime,
     endTime: dto.endTime,
     status: dto.status,
-    worker: { userId: dto.worker } , 
+    service: { serviceId: dto.serviceId } , 
     client: { id: dto.client } 
   };
   try {

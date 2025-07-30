@@ -31,10 +31,6 @@ export class WorkerInfo {
 @OneToMany(() => WorkerServices, (ws) => ws.worker, { cascade: true })
 workerServices: WorkerServices[];
 
-  @OneToMany(() => Reservation, (reservation) => reservation.worker, {
-    cascade: true,
-  })
-  requests: Reservation[];
 
   @OneToMany(() => OffShift, (offShift) => offShift.worker, { cascade: true })
   offShifts: OffShift[];

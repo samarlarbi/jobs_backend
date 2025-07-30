@@ -3,8 +3,9 @@ import { IsDateString, IsNumber, IsString, Matches } from "class-validator";
 export class reservationDTO{
     @IsNumber()
     client: number
-    @IsNumber()
-    worker:  number
+  @IsNumber()
+  serviceId: number;
+
     @IsString()
     status="Pending"
     @IsDateString({},{ message: 'day must be a valid ISO date string (YYYY-MM-DD)' })
