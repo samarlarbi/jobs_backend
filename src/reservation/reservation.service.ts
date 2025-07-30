@@ -25,6 +25,25 @@ export class ReservationService {
     private workerrepo: Repository<WorkerServices>,
 
   ) {}
+  async getallreservation(id: number) {
+  return await this.reservationrepo.find({
+    where: {
+      client: { id: id }
+    },
+    relations: {
+      service: {
+        service: true,
+        worker: {
+          user: true 
+        }
+      }
+    },
+    skip: 0,
+    take: 10,
+  });
+}
+
+
 async createreservation(dto: reservationDTO) {
 
 const worker= await this.workerrepo.findOne({

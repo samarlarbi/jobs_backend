@@ -89,6 +89,15 @@ export class UserController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
+
+  @Get('reservation')
+  getreservations(@Req() req){
+
+ return   this.reservationService.getallreservation(req.user.id)
+  }
+
+
   @Roles(Role.WORKER)
   @UseGuards(RolesGuard)
   @UseGuards(JwtAuthGuard)
