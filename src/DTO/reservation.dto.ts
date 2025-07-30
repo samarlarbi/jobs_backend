@@ -1,7 +1,8 @@
-import { IsDateString, IsNumber, IsString, Matches } from "class-validator";
+import { IsDateString, IsNumber, IsOptional, IsString, Matches } from "class-validator";
 
 export class reservationDTO{
     @IsNumber()
+    @IsOptional()
     client: number
   @IsNumber()
   serviceId: number;
