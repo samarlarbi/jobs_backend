@@ -15,7 +15,7 @@ import { Service } from '../entities/service.entity';
 import { User } from '../entities/user.entity';
 import { WorkerInfo } from '../entities/worker.entity';
 import { ReservationService } from '../reservation/reservation.service';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { WorkerServices } from '../entities/worker_service.entity';
 import { OffShift } from 'src/entities/offShift.entity';
 import { Reservation } from 'src/entities/reservation.entity';
@@ -37,6 +37,27 @@ export class UserService {
     @InjectRepository(Reservation)
     private reservationrepo: Repository<Reservation>,
   ) {}
+
+  
+ async searchWorker(query: string, paginationDto: PaginationDTO) {
+  const [result, total] = await this.userRepo.findAndCount({
+    where: [
+      { name: Like(`${query}%`) },
+      { email: Like(`${query}%`) },
+      { phone: Like(`${query}%`) },
+      // ajoute d'autres champs si besoin
+    ],
+    skip: paginationDto?.skip ?? 0,
+    take: paginationDto?.limit ?? 10,
+  });
+
+  return {
+    data: result,
+    total,
+  };
+}
+
+
 
   async getallservices() {
     return await this.servicesrepo.find({

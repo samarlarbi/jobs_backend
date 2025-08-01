@@ -34,6 +34,16 @@ export class UserController {
     private reservationService: ReservationService,
   ) {}
 
+
+   @Get('search')
+  async searchUsers(
+    @Query('q') query: string,
+    @Query() paginationDto: PaginationDTO,
+  ) {
+    return this.userService.searchWorker(query, paginationDto);
+  }
+
+
   @UseGuards(JwtAuthGuard)
   @Get('services')
   getallservices() {
