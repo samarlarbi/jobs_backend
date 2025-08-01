@@ -38,24 +38,25 @@ export class UserService {
     private reservationrepo: Repository<Reservation>,
   ) {}
 
-  
- async searchWorker(query: string, paginationDto: PaginationDTO) {
-  const [result, total] = await this.userRepo.findAndCount({
+async searchWorker(query: string, paginationDto: PaginationDTO) {
+  const [data, total] = await this.userRepo.findAndCount({
     where: [
-      { name: Like(`${query}%`) },
-      { email: Like(`${query}%`) },
-      { phone: Like(`${query}%`) },
-      // ajoute d'autres champs si besoin
+      {
+        role: Role.WORKER,
+        name: Like(`${query}%`),
+      },
+      {
+        role: Role.WORKER,
+        email: Like(`${query}%`),
+      },
     ],
-    skip: paginationDto?.skip ?? 0,
-    take: paginationDto?.limit ?? 10,
+    skip: paginationDto.skip ?? 0,
+    take: paginationDto.limit ?? 10,
   });
 
-  return {
-    data: result,
-    total,
-  };
+  return { data, total };
 }
+
 
 
 
