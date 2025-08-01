@@ -97,6 +97,12 @@ export class UserController {
  return   this.reservationService.getallreservation(req.user.id)
   }
 
+  
+ @Get('reservation/:id')
+  getreservation(@Req() req,@Param('id',ParseIntPipe) id:number){
+
+ return   this.reservationService.getreservation(id)
+  }
 
   @Roles(Role.WORKER)
   @UseGuards(RolesGuard)

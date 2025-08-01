@@ -11,7 +11,7 @@ import { reservationDTO } from '../DTO/reservation.dto';
 import { UpdateReservationDTO } from '../DTO/updatereservation.dto';
 import { OffShift } from '../entities/offShift.entity';
 import { Reservation } from '../entities/reservation.entity';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 import { WorkerServices } from '../entities/worker_service.entity';
 
 @Injectable()
@@ -26,7 +26,7 @@ export class ReservationService {
 
   ) {}
   async getallreservation(id: number) {
-  return await this.reservationrepo.find({
+  const reservations= await this.reservationrepo.find({
     where: {
       client: { id: id }
     },
@@ -41,8 +41,57 @@ export class ReservationService {
     skip: 0,
     take: 10,
   });
-}
+  return reservations.map((res)  =>
+    ( {
+       id: res.id,
+    startTime: res.startTime,
+    endTime: res.endTime,
+    status: res.status,
+    title: res.service.service.title,
+    serviceDescription: res.service.description,
+    workerName: res.service.worker.user.name,
+    workerId: res.service.worker.userId,
+    workerImg: res.service.worker.user.imgprofile,
+    workerPhone: res.service.worker.user.phone,
 
+    })
+  
+       
+);
+}
+ async getreservation(id: number) {
+  const res= await this.reservationrepo.findOne({
+    where: {
+      id: id
+    },
+    relations: {
+      service: {
+        service: true,
+        worker: {
+          user: true 
+        }
+      }
+    },
+  
+  });
+  if (!res) {
+    throw new NotFoundException(`Reservation not found`);
+  }
+  return {
+    id: res.id,
+    startTime: res.startTime,
+    endTime: res.endTime,
+    status: res.status,
+    title: res.service.service.title,
+    serviceDescription: res.service.description,
+    workerName: res.service.worker.user.name,
+    workerId: res.service.worker.userId,
+    workerImg: res.service.worker.user.imgprofile,
+    workerPhone: res.service.worker.user.phone,
+
+
+  };
+}
 
 async createreservation(dto: reservationDTO) {
 
@@ -65,10 +114,20 @@ const offshiftexist = await this.offshiftrepo
   .andWhere('off.endTime > :startTime', { startTime: dto.startTime })
   .getOne();
 
-     if(offshiftexist){
+    
+     
+    const hasReservationNow = await this.reservationrepo.findOne({
+  where: {
+    service: { id: dto.serviceId }, 
+    day: dto.day,
+    startTime: LessThanOrEqual(dto.endTime),
+    endTime: MoreThanOrEqual( dto.startTime),
+  },
+});
+
+ if(offshiftexist || hasReservationNow){
         throw new ConflictException("worker is not available")
      }
-
   
   const data = {
     day: dto.day,
