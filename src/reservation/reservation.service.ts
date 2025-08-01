@@ -45,7 +45,9 @@ export class ReservationService {
     ( {
        id: res.id,
     startTime: res.startTime,
-    endTime: res.endTime,
+    endTime: res.endTime,  
+      day:res.day,
+
     status: res.status,
     title: res.service.service.title,
     serviceDescription: res.service.description,
@@ -81,6 +83,7 @@ export class ReservationService {
     id: res.id,
     startTime: res.startTime,
     endTime: res.endTime,
+    day:res.day,
     status: res.status,
     title: res.service.service.title,
     serviceDescription: res.service.description,
