@@ -37,27 +37,36 @@ export class UserService {
     @InjectRepository(Reservation)
     private reservationrepo: Repository<Reservation>,
   ) {}
+async searchWorker(query: string, paginationDto: { skip: number; limit: number }) {
+  let users;
 
-async searchWorker(query: string, paginationDto: PaginationDTO) {
-  const [data, total] = await this.userRepo.findAndCount({
-    where: [
-      {
-        role: Role.WORKER,
-        name: Like(`${query}%`),
-      },
-      {
-        role: Role.WORKER,
-        email: Like(`${query}%`),
-      },
-    ],
-    skip: paginationDto.skip ?? 0,
-    take: paginationDto.limit ?? 10,
-  });
+  if (query) {
+    users = await this.userRepo.find({
+      where: { role: Role.WORKER, name: Like(`${query}%`) }, // 🔥 seulement nom commence par q
+      relations: ['worker'],
+      skip: paginationDto.skip,
+      take: paginationDto.limit,
+    });
+  } else {
+    users = await this.userRepo.find({
+      where: { role: Role.WORKER },
+      relations: ['worker'],
+      skip: paginationDto.skip,
+      take: paginationDto.limit,
+    });
+  }
 
-  return { data, total };
+  const data = users.map(user => ({
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    imgprofile: user.imgprofile,
+    phone: user.phone,
+    workerId: user.worker?.id,
+  }));
+
+  return data;
 }
-
-
 
 
   async getallservices() {

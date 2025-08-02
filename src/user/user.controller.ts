@@ -33,15 +33,24 @@ export class UserController {
     private userService: UserService,
     private reservationService: ReservationService,
   ) {}
+  
+  
+  
+@Get('search')
+async searchUsers(
+  @Query('q') query: string,
+  @Query('skip') skip = '0',
+  @Query('limit') limit = '10',
+) {
+  const paginationDto = {
+    skip: parseInt(skip, 10),
+    limit: parseInt(limit, 10),
+  };
+
+  return this.userService.searchWorker(query, paginationDto);
+}
 
 
-   @Get('search')
-  async searchUsers(
-    @Query('q') query: string,
-    @Query() paginationDto: PaginationDTO,
-  ) {
-    return this.userService.searchWorker(query, paginationDto);
-  }
 
 
   @UseGuards(JwtAuthGuard)
