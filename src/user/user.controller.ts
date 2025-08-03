@@ -94,6 +94,11 @@ async searchUsers(
   getProfile(@Req() req,@Param('id', ParseIntPipe) id) {
     return this.userService.getprofile(id);
   }
+    @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getmyProfile(@Req() req) {
+    return this.userService.getprofile(req.user.id);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('reservation')
