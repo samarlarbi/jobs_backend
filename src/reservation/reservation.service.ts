@@ -1,8 +1,7 @@
 import {
-    ConflictException,
+  ConflictException,
   Injectable,
   InternalServerErrorException,
-  NotAcceptableException,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -19,66 +18,95 @@ export class ReservationService {
   constructor(
     @InjectRepository(Reservation)
     private reservationrepo: Repository<Reservation>,
- @InjectRepository(OffShift)
+    @InjectRepository(OffShift)
     private offshiftrepo: Repository<OffShift>,
-     @InjectRepository(WorkerServices)
+    @InjectRepository(WorkerServices)
     private workerrepo: Repository<WorkerServices>,
-
   ) {}
 
-
-
-
-
-
+  // Helper to get YYYY-MM-DD in local timezone (avoids UTC issues)
+  private getLocalDateString(date: Date): string {
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   async getTodaysReservationsCountForWorker(workerId: number): Promise<number> {
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.getLocalDateString(new Date());
     return this.reservationrepo.count({
       where: { day: today, service: { worker: { userId: workerId } } },
-      relations: ['service', 'service.worker'],
+      relations: ['client', 'service', 'service.worker', 'service.service'],
     });
   }
 
   async getTotalReservationsCountForWorker(workerId: number): Promise<number> {
     return this.reservationrepo.count({
       where: { service: { worker: { userId: workerId } } },
-      relations: ['service', 'service.worker'],
+      relations: ['client', 'service', 'service.worker', 'service.service'],
     });
   }
 
-  async getWeeklyReservationsCountForWorker(workerId: number): Promise<{ day: string; count: number }[]> {
+  async getWeeklyReservationsCountForWorker(
+    workerId: number,
+    mode: 'week' | 'last7' = 'week',
+  ) {
     const today = new Date();
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+    let startOfRange: Date;
+    let endOfRange: Date;
 
-    const startDate = startOfWeek.toISOString().split('T')[0];
-    const endDate = endOfWeek.toISOString().split('T')[0];
+    if (mode === 'week') {
+      // Current week: Monday → Sunday
+      const dayOfWeek = today.getDay() === 0 ? 7 : today.getDay(); // Sunday = 7
+      startOfRange = new Date(today);
+      startOfRange.setDate(today.getDate() - (dayOfWeek - 1)); // Move to Monday
+      endOfRange = new Date(startOfRange);
+      endOfRange.setDate(startOfRange.getDate() + 6); // Sunday
+    } else {
+      // Last 7 days rolling range
+      startOfRange = new Date(today);
+      startOfRange.setDate(today.getDate() - 6);
+      endOfRange = new Date(today);
+    }
 
+    const startDate = this.getLocalDateString(startOfRange);
+    const endDate = this.getLocalDateString(endOfRange);
+
+    console.log(`Querying reservations for worker ${workerId} between ${startDate} and ${endDate}`);
+
+    // Query reservations in date range
     const reservations = await this.reservationrepo
       .createQueryBuilder('reservation')
-      .select("reservation.day", "day")
-      .addSelect("COUNT(*)", "count")
+      .select('reservation.day', 'day')
+      .addSelect('COUNT(reservation.id)', 'count')
       .innerJoin('reservation.service', 'service')
       .innerJoin('service.worker', 'worker')
-      .where("worker.userId = :workerId", { workerId })
-      .andWhere("reservation.day BETWEEN :startDate AND :endDate", { startDate, endDate })
-      .groupBy("reservation.day")
-      .orderBy("reservation.day", "ASC")
+      .where('worker.userId = :workerId', { workerId })
+      .andWhere('reservation.day >= :startDate', { startDate })
+      .andWhere('reservation.day <= :endDate', { endDate })
+      .groupBy('reservation.day')
+      .orderBy('reservation.day', 'ASC')
       .getRawMany();
 
+    // Normalize 'day' field to 'YYYY-MM-DD' string for correct matching
+    const normalizedReservations = reservations.map(r => ({
+      day: new Date(r.day).toISOString().split('T')[0],
+      count: parseInt(r.count, 10),
+    }));
+
+    console.log('Reservations found:', normalizedReservations);
+
+    // Build full week result with counts (0 if none)
     const result: { day: string; count: number }[] = [];
     for (let i = 0; i < 7; i++) {
-      const d = new Date(startOfWeek);
-      d.setDate(startOfWeek.getDate() + i);
-      const formatted = d.toISOString().split('T')[0];
-      const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(); // MON, TUE...
-      const found = reservations.find(r => r.day === formatted);
+      const d = new Date(startOfRange);
+      d.setDate(startOfRange.getDate() + i);
+      const formatted = this.getLocalDateString(d); // 'YYYY-MM-DD'
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase();
+      const found = normalizedReservations.find(r => r.day === formatted);
       result.push({
         day: dayName,
-        count: found ? parseInt(found.count, 10) : 0,
+        count: found ? found.count : 0,
       });
     }
 
@@ -86,10 +114,10 @@ export class ReservationService {
   }
 
   async getTodaysReservationsListForWorker(workerId: number) {
-    const today = new Date().toISOString().split('T')[0];
+    const today = this.getLocalDateString(new Date());
     return this.reservationrepo.find({
       where: { day: today, service: { worker: { userId: workerId } } },
-      relations: ['client', 'service', 'service.worker'],
+      relations: ['client', 'service', 'service.worker', 'service.service'],
       order: { startTime: 'ASC' },
     });
   }
@@ -114,6 +142,7 @@ export class ReservationService {
       })),
     };
   }
+
   async getallreservation(id: number) {
   const reservations= await this.reservationrepo.find({
     where: {
