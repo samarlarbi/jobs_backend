@@ -25,6 +25,95 @@ export class ReservationService {
     private workerrepo: Repository<WorkerServices>,
 
   ) {}
+
+
+
+
+
+
+
+  async getTodaysReservationsCountForWorker(workerId: number): Promise<number> {
+    const today = new Date().toISOString().split('T')[0];
+    return this.reservationrepo.count({
+      where: { day: today, service: { worker: { userId: workerId } } },
+      relations: ['service', 'service.worker'],
+    });
+  }
+
+  async getTotalReservationsCountForWorker(workerId: number): Promise<number> {
+    return this.reservationrepo.count({
+      where: { service: { worker: { userId: workerId } } },
+      relations: ['service', 'service.worker'],
+    });
+  }
+
+  async getWeeklyReservationsCountForWorker(workerId: number): Promise<{ day: string; count: number }[]> {
+    const today = new Date();
+    const startOfWeek = new Date(today);
+    startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+
+    const startDate = startOfWeek.toISOString().split('T')[0];
+    const endDate = endOfWeek.toISOString().split('T')[0];
+
+    const reservations = await this.reservationrepo
+      .createQueryBuilder('reservation')
+      .select("reservation.day", "day")
+      .addSelect("COUNT(*)", "count")
+      .innerJoin('reservation.service', 'service')
+      .innerJoin('service.worker', 'worker')
+      .where("worker.userId = :workerId", { workerId })
+      .andWhere("reservation.day BETWEEN :startDate AND :endDate", { startDate, endDate })
+      .groupBy("reservation.day")
+      .orderBy("reservation.day", "ASC")
+      .getRawMany();
+
+    const result: { day: string; count: number }[] = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(startOfWeek);
+      d.setDate(startOfWeek.getDate() + i);
+      const formatted = d.toISOString().split('T')[0];
+      const dayName = d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase(); // MON, TUE...
+      const found = reservations.find(r => r.day === formatted);
+      result.push({
+        day: dayName,
+        count: found ? parseInt(found.count, 10) : 0,
+      });
+    }
+
+    return result;
+  }
+
+  async getTodaysReservationsListForWorker(workerId: number) {
+    const today = new Date().toISOString().split('T')[0];
+    return this.reservationrepo.find({
+      where: { day: today, service: { worker: { userId: workerId } } },
+      relations: ['client', 'service', 'service.worker'],
+      order: { startTime: 'ASC' },
+    });
+  }
+
+  async getStats(workerId: number) {
+    const todayCount = await this.getTodaysReservationsCountForWorker(workerId);
+    const totalCount = await this.getTotalReservationsCountForWorker(workerId);
+    const weeklyData = await this.getWeeklyReservationsCountForWorker(workerId);
+    const todayList = await this.getTodaysReservationsListForWorker(workerId);
+
+    return {
+      todayCount,
+      totalCount,
+      weeklyData,
+      todayList: todayList.map(r => ({
+        id: r.id,
+        clientName: r.client?.name || 'Unknown',
+        serviceName: r.service?.service.title || 'Unknown Service',
+        status: r.status,
+        startTime: r.startTime,
+        endTime: r.endTime,
+      })),
+    };
+  }
   async getallreservation(id: number) {
   const reservations= await this.reservationrepo.find({
     where: {
@@ -47,15 +136,11 @@ export class ReservationService {
     startTime: res.startTime,
     endTime: res.endTime,  
       day:res.day,
+      clientname:res.client.name
 
-    status: res.status,
+   , status: res.status,
     title: res.service.service.title,
-    serviceDescription: res.service.description,
-    workerName: res.service.worker.user.name,
-    workerId: res.service.worker.userId,
-    workerImg: res.service.worker.user.imgprofile,
-    workerPhone: res.service.worker.user.phone,
-
+    
     })
   
        

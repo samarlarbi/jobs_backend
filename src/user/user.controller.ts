@@ -99,6 +99,14 @@ async searchUsers(
   getmyProfile(@Req() req) {
     return this.userService.getprofile(req.user.id);
   }
+  
+  @Roles(Role.WORKER)
+  @UseGuards(RolesGuard)
+  @UseGuards(JwtAuthGuard)
+  @Get('stats')
+  async getReservationStats(@Req() req) {
+    return this.reservationService.getStats(req.user.id);
+  }
 
   @UseGuards(JwtAuthGuard)
   @Post('reservation')
