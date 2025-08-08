@@ -44,7 +44,8 @@ export class User {
     this.password = await bycrypt.hash(this.password, 10);
   }
   @OneToOne(() => WorkerInfo, (worker) => worker.user, {
-    cascade: true,
+    onDelete: 'CASCADE',
+  cascade: true, 
     nullable: true,
   })
   worker: WorkerInfo;

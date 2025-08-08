@@ -81,11 +81,69 @@ async addServiceToWorker(workerId: number, serviceId: number, price?: number) {
   async findAll() {
     return await this.workerrepo.find();
   }
+async getAllOffShifts(id: number) {
+  const offshifts = await this.offShiftRepo.find({
+    where: { worker: { userId: id } },
+  });
+  if (!offshifts.length) {
+    throw new NotFoundException('No off shifts found for this worker');
+  }
+  return offshifts;
+}
+
 
   async findOne(id: number) {}
 
-  async update(id: number, dto: UpdateWorkerDto) {
+ async update(userId: number, workerDto: UpdateWorkerDto) {
+  const worker = await this.workerrepo.findOne({
+    where: { userId },
+    relations: ['user'],
+  });
+
+  if (!worker) {
+    throw new NotFoundException('Worker not found');
   }
+
+  // Extract User-related fields from DTO
+  const { name, email, password, location, phone, imgprofile, ...workerFields } = workerDto;
+
+  // Update worker-specific fields (like description, if present in workerFields)
+  Object.assign(worker, workerFields);
+
+  // Update User entity fields
+  if (worker.user) {
+    if (name !== undefined) worker.user.name = name;
+    if (email !== undefined) worker.user.email = email;
+   
+    if (location !== undefined) worker.user.location = location;
+    if (phone !== undefined) worker.user.phone = phone;
+    if (imgprofile !== undefined) worker.user.imgprofile = imgprofile;
+  }
+
+  // Save user first (important for FK relations)
+  await this.workerrepo.manager.save(worker.user);
+
+  // Save worker
+  return await this.workerrepo.save(worker);
+}
+async deleteOffShift(id: number) {
+  const offshift = await this.offShiftRepo.findOne({ where: { id } });
+  if (!offshift) {
+    throw new NotFoundException('OffShift not found');
+  }
+  return await this.offShiftRepo.remove(offshift);
+}
+
+async deleteWorkerService(workerId: number, id: number) {
+  const workerService = await this.workerServiceRepo.findOne({
+    where: { workerId, id },
+  });
+  if (!workerService) {
+    throw new NotFoundException('WorkerService relation not found');
+  }
+  return await this.workerServiceRepo.remove(workerService);
+}
+
 
   async delete(id: number) {}
 }

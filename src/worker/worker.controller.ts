@@ -34,6 +34,36 @@ export class WorkerController {
   findAll() {
     return this.workerService.findAll();
   }
+  
+  @Roles(Role.WORKER)
+  @UseGuards(JwtAuthGuard)
+  @Get('offshift')
+  getOffShifts(@Req() req, ) {
+    console.log("object");
+    console.log(req.user.id);
+    return this.workerService.getAllOffShifts(req.user.id);
+  }
+  
+
+  @Roles(Role.WORKER)
+  @UseGuards(JwtAuthGuard)
+  @Delete('offshift/:id')
+  deletOffShifts(@Req() req, @Param('id', ParseIntPipe) id) {
+    console.log("object");
+    console.log(req.user.id);
+    return this.workerService.deleteOffShift(id);
+  }
+ @Roles(Role.WORKER)
+  @UseGuards(JwtAuthGuard)
+  @Delete('workerservice/:id')
+  deletworkerservice(@Req() req, @Param('id', ParseIntPipe) id) {
+    console.log("object");
+    console.log(req.user.id);
+    return this.workerService.deleteWorkerService(req.user.id,id);
+  }
+
+
+
   @UseGuards(JwtAuthGuard)
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id) {
@@ -65,6 +95,11 @@ export class WorkerController {
 
     return this.workerService.addOffShift(dto);
   }
+
+
+
+
+
   @Roles(Role.WORKER)
   @UseGuards(JwtAuthGuard)
   @Put('reservation/:id')
@@ -75,12 +110,20 @@ export class WorkerController {
   ) {
     // return this.reservationService.updatereservation(req.user.id,resid,dto)
   }
+
+
+
   @Roles(Role.WORKER)
   @UseGuards(JwtAuthGuard)
-  @Put(':id')
-  update(@Param('id', ParseIntPipe) id, @Body() body: UpdateWorkerDto) {
-    return this.workerService.update(id, body);
+  @Put('')
+  updateservice(@Req() req, @Body() body: UpdateWorkerDto) {
+    return this.workerService.update(req.user.id, body);
   }
+
+
+
+
+
   @Roles(Role.WORKER)
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
