@@ -325,7 +325,6 @@ const offshiftexist = await this.offshiftrepo
       { id: reservationid },
       {
         status: dto.status,
-        client: { id: dto.client },
       },
     );
   }
