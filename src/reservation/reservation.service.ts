@@ -218,12 +218,14 @@ async getallworkerreservation(id: number) {
       id: id
     },
     relations: {
+    
       service: {
-        service: true,
+       service: true,
         worker: {
           user: true 
         }
-      }
+      },
+      client:true
     },
   
   });
@@ -239,6 +241,9 @@ async getallworkerreservation(id: number) {
     title: res.service.service.title,
     serviceDescription: res.service.description,
     workerName: res.service.worker.user.name,
+    userimg: res.client.imgprofile,
+    username:res.client.name,
+    userphone:res.client.phone,
     workerId: res.service.worker.userId,
     workerImg: res.service.worker.user.imgprofile,
     workerPhone: res.service.worker.user.phone,
