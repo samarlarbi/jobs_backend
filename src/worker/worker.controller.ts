@@ -64,7 +64,7 @@ export class WorkerController {
 
  @Roles(Role.WORKER)
   @UseGuards(JwtAuthGuard)
-  @Delete('reservation')
+  @Get('reservation')
   getworkerreservation(@Req() req) {
    
     return this.reservationService.getallworkerreservation(req.user.id);
