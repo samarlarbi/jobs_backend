@@ -116,7 +116,7 @@ export class WorkerController {
     @Param('id', ParseIntPipe) resid,
     @Body() dto: UpdateReservationDTO,
   ) {
-    // return this.reservationService.updatereservation(req.user.id,resid,dto)
+     return this.reservationService.updatereservation(req.user.id,resid,dto)
   }
 
 
