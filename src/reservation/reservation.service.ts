@@ -142,7 +142,13 @@ export class ReservationService {
       })),
     };
   }
-
+async deletereservation(id: number): Promise<void> {
+  const reservation = await this.reservationrepo.findOne({ where: { id } });
+  if (!reservation) {
+    throw new NotFoundException(`Reservation with id ${id} not found`);
+  }
+  await this.reservationrepo.delete(id);
+}
   async getallreservation(id: number) {
   const reservations= await this.reservationrepo.find({
     where: {

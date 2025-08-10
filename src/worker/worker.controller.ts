@@ -119,6 +119,11 @@ export class WorkerController {
      return this.reservationService.updatereservation(req.user.id,resid,dto)
   }
 
+  @Delete('reservation/:id')
+  async deleteReservation(@Param('id', ParseIntPipe) id: number) {
+    await this.reservationService.deletereservation(id);
+    return { message: 'Reservation deleted successfully' };
+  }
 
 
   @Roles(Role.WORKER)
