@@ -176,39 +176,35 @@ export class ReservationService {
 );
 }
 
-
-  async getallworkerreservation(id: number) {
-  const reservations= await this.reservationrepo.find({
+async getallworkerreservation(id: number) {
+  const reservations = await this.reservationrepo.find({
     where: {
-    service: { worker:{userId:id} }
+      service: { worker: { user: { id } } }
     },
     relations: {
+      client: true, // you need this to get client.name
       service: {
-        service: true,
+        service: true, // only if WorkerServices has a relation "service"
         worker: {
-          user: true 
+          user: true
         }
       }
     },
     skip: 0,
     take: 10,
   });
-  return reservations.map((res)  =>
-    ( {
-       id: res.id,
-    startTime: res.startTime,
-    endTime: res.endTime,  
-      day:res.day,
-      clientname:res.client.name
 
-   , status: res.status,
+  return reservations.map(res => ({
+    id: res.id,
+    startTime: res.startTime,
+    endTime: res.endTime,
+    day: res.day,
+    clientname: res.client.name,
+    status: res.status,
     title: res.service.service.title,
-    
-    })
-  
-       
-);
+  }));
 }
+
  async getreservation(id: number) {
   const res= await this.reservationrepo.findOne({
     where: {
