@@ -149,6 +149,7 @@ export class ReservationService {
       client: { id: id }
     },
     relations: {
+      client:true,
       service: {
         service: true,
         worker: {
