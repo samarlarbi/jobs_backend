@@ -62,6 +62,14 @@ export class WorkerController {
     return this.workerService.deleteWorkerService(req.user.id,id);
   }
 
+ @Roles(Role.WORKER)
+  @UseGuards(JwtAuthGuard)
+  @Delete('reservation')
+  getworkerreservation(@Req() req) {
+   
+    return this.reservationService.getallworkerreservation(req.user.id);
+  }
+
 
 
   @UseGuards(JwtAuthGuard)

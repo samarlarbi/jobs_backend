@@ -175,6 +175,40 @@ export class ReservationService {
        
 );
 }
+
+
+  async getallworkerreservation(id: number) {
+  const reservations= await this.reservationrepo.find({
+    where: {
+    service: { worker:{userId:id} }
+    },
+    relations: {
+      service: {
+        service: true,
+        worker: {
+          user: true 
+        }
+      }
+    },
+    skip: 0,
+    take: 10,
+  });
+  return reservations.map((res)  =>
+    ( {
+       id: res.id,
+    startTime: res.startTime,
+    endTime: res.endTime,  
+      day:res.day,
+      clientname:res.client.name
+
+   , status: res.status,
+    title: res.service.service.title,
+    
+    })
+  
+       
+);
+}
  async getreservation(id: number) {
   const res= await this.reservationrepo.findOne({
     where: {
