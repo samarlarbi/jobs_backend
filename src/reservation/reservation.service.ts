@@ -157,8 +157,10 @@ async deletereservation(id: number): Promise<void> {
     relations: {
       client:true,
       service: {
+
         service: true,
         worker: {
+
           user: true 
         }
       }
@@ -172,8 +174,11 @@ async deletereservation(id: number): Promise<void> {
     startTime: res.startTime,
     endTime: res.endTime,  
       day:res.day,
-      clientname:res.client.name
-
+      clientname:res.client.name,
+      workerName:res.service.worker.user.name
+,
+workerphone:res.service.worker.user.phone,
+clientphone:res.client.phone
    , status: res.status,
     title: res.service.service.title,
     
@@ -200,7 +205,6 @@ async getallworkerreservation(id: number) {
     skip: 0,
     take: 10,
   });
-
   return reservations.map(res => ({
     id: res.id,
     startTime: res.startTime,

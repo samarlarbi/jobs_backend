@@ -5,9 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Reservation } from '../entities/reservation.entity';
 import { OffShift } from '../entities/offShift.entity';
 import { WorkerServices } from 'src/entities/worker_service.entity';
+import { Service } from 'src/entities/service.entity';
+import { User } from 'src/entities/user.entity';
+import { WorkerInfo } from 'src/entities/worker.entity';
 
 @Module({
-  imports:[TypeOrmModule.forFeature([Reservation,OffShift,WorkerServices])],
+  imports:[TypeOrmModule.forFeature([User,Reservation,WorkerInfo,OffShift,Service,WorkerServices])],
   providers: [ReservationService],
   controllers: [ReservationController]
 })
